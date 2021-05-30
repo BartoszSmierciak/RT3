@@ -5,10 +5,48 @@ class Encoder
         Encoder();
     
         int GetPosition();
-        
+        int GetActualReverseState();
+        int GetTermResetState();
+        int GetSpeed();
+        int GetLimitSwitchState();
+        int GetPhysicalSTResolution();
+        int GetPhysicalMTResolution();
         int GetScalingEnabled();
         void SetScalingEnabled(int scalingEnabled);
+        int GetSTResolution();
+        void SetSTResolution(int stResolution);
+        int GetTotResolution();
+        void SetTotResolution(int totResolution);
+        int GetPreset();
+        void SetPreset(int preset);
+        int GetOffset();
+        int GetCountDirection();
+        void SetCountDirection(int countDirection);
+        int GetSpeedMode();
+        void SetSpeedMode(int speed);
+        int GetSpeedFilter();
+        void SetSpeedFilter(int speedLimit)
+        int GetLimitSwitchEnable();
+        void SetLimitSwitchEnable(int limitSwitchEnable);
+        int GetLowLimitSwitch();
+        void SetLowLimitSwitch(int lowLimitSwitch);
+        int GetHighLimitSwitch();
+        void SetHighLimitSwitch(int highLimitSwitch);
+        int GetDelay();
+        void SetDelay(int delay);
+        int GetErrorReg();
+        void SetErrorReg(int errorReg);
+        int GetDeviceResetStore();
+        void SetDeviceResetStore(int deviceResetStore);
+        int GetParameters();
+        void Setparameters(int parameters);
+        
+        void SetDeviceResetStore();
     
+        
+        
+        
+                        
     private:
     
         int _position;
@@ -43,7 +81,7 @@ class Encoder
         static const uint16_t regHighLimitSwitchH         = 0x9C60;
         static const uint16_t regHighLimitSwitchL         = 0x9C61;
         static const uint16_t regDelay                    = 0x9C62;
-        static const uint16_t regerrorReg                 = 0x9C63;
+        static const uint16_t regErrorReg                 = 0x9C63;
         static const uint16_t regDeviceResetStore         = 0x9C63;
         static const uint16_t regParameters               = 0x9C64;
         static const uint16_t regAutoStore                = 0x9C65;
