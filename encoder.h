@@ -1,10 +1,10 @@
-/************************************************************************//
+/*
 * @file encoder.h
 * @author Bartosz Śmierciak
 * @Date 2021-05-31
 *
 * @brief A brief description of encoder.h.
-******************************************************************************/
+*/
 
 
 class Encoder
@@ -113,7 +113,7 @@ class Encoder
         int GetNodeAddress();
         void SetNodeAddress(int nodeAddress);
     
-        int GetNodeUpdate():
+        int GetNodeUpdate();
         void SetNodeUpdate(int nodeUpdate);
     
         int GetAutoBaudEnable();
