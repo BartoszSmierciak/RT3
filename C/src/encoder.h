@@ -5,14 +5,20 @@
 *
 * @brief A brief description of encoder.h.
 */
- #include <modbus.h>   
+ #include <modbus.h>  
+
+//Modbus contex
+modbus_t *ctx;
+
 /*!
 * EncoderGet encoder position.
 * \return position on success
 */
-int EncoderInit();
+int EncoderInit(const char *device,
+                int baud, char parity, int data_bit,
+                int stop_bit);
 
-int EncoderSendModbus();
+uint16_t EncoderSendModbus(int slaveAddress, int regAddress, int regToRead);
 
 int EncoderClose();
 
