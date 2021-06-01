@@ -5,11 +5,17 @@
 *
 * @brief A brief description of encoder.h.
 */
-    
+ #include <modbus.h>   
 /*!
 * EncoderGet encoder position.
 * \return position on success
 */
+int EncoderInit();
+
+int EncoderSendModbus();
+
+int EncoderClose();
+
 int EncoderGetPosition();
         
 int EncoderGetActualReverseState();
