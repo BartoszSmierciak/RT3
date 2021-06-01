@@ -7,28 +7,28 @@
 */
     
 /*!
-* Get encoder position.
+* EncoderGet encoder position.
 * \return position on success
 */
-int GetPosition();
+int EncoderGetPosition();
         
-int GetActualReverseState();
+int EncoderGetActualReverseState();
     
-int GetTermResetState();
+int EncoderGetTermResetState();
     
-int GetSpeed();
+int EncoderGetSpeed();
     
-int GetLimitSwitchState();
+int EncoderGetLimitSwitchState();
     
-int GetPhysicalSTResolution();
+int EncoderGetPhysicalSTResolution();
     
-int GetPhysicalMTResolution();
+int EncoderGetPhysicalMTResolution();
     
 /*!
-* Get scaling enabled.
+* EncoderGet scaling enabled.
 * \return TODO
 */
-int GetScalingEnabled();
+int EncoderGetScalingEnabled();
     
 /*!
 * Set scaling enabled.
@@ -36,146 +36,146 @@ int GetScalingEnabled();
 */
 void SetScalingEnabled(int scalingEnabled);
     
-int GetSTResolution();
+int EncoderGetSTResolution();
 void SetSTResolution(int stResolution);
     
-int GetTotResolution();
+int EncoderGetTotResolution();
 void SetTotResolution(int totResolution);
     
-int GetPreset();
+int EncoderGetPreset();
 void SetPreset(int preset);
     
-int GetOffset();
+int EncoderGetOffset();
     
-int GetCountDirection();
+int EncoderGetCountDirection();
 void SetCountDirection(int countDirection);
     
-int GetSpeedMode();
+int EncoderGetSpeedMode();
 void SetSpeedMode(int speed);
     
-int GetSpeedFilter();
+int EncoderGetSpeedFilter();
 void SetSpeedFilter(int speedLimit);
     
-int GetLimitSwitchEnable();
+int EncoderGetLimitSwitchEnable();
 void SetLimitSwitchEnable(int limitSwitchEnable);
     
-int GetLowLimitSwitch();
+int EncoderGetLowLimitSwitch();
 void SetLowLimitSwitch(int lowLimitSwitch);
     
-int GetHighLimitSwitch();
+int EncoderGetHighLimitSwitch();
 void SetHighLimitSwitch(int highLimitSwitch);
     
-int GetDelay();
+int EncoderGetDelay();
 void SetDelay(int delay);
     
-int GetErrorReg();
-void SetErrorReg(int errorReg);
+int EncoderGetErrorencoderReg();
+void SetErrorencoderReg(int errorencoderReg);
     
-int GetDeviceResetStore();
+int EncoderGetDeviceResetStore();
 void SetDeviceResetStore(int deviceResetStore);
     
-int GetParameters();
+int EncoderGetParameters();
 void SetParameters(int parameters);
     
-int GetAutoStore();
+int EncoderGetAutoStore();
 void SetAutoStore(int autostore);
     
-int GetRestoreAllParameters();
+int EncoderGetRestoreAllParameters();
 void SetRestoreAllParameters(int restoreAllParameters);
     
-int GetRestoreAplicationParameters();
+int EncoderGetRestoreAplicationParameters();
 void SteRestoteAplicationParameters(int restoreAplicationparameters);
         
-int GetAutoTest();
+int EncoderGetAutoTest();
 void SetAutoTest(int autoTest);
     
-int GetSoftwareVersion();
+int EncoderGetSoftwareVersion();
         
-int GetSerialNumber();
+int EncoderGetSerialNumber();
     
-int GetLifeCycleCounter();
+int EncoderGetLifeCycleCounter();
     
-int GetRollCounter();
+int EncoderGetRollCounter();
         
-int GetSerialParameters();
+int EncoderGetSerialParameters();
 void SetSerialParameters(int serialParameters);
         
-int GetCommUpdate();
+int EncoderGetCommUpdate();
 void SetCommUpdate(int commUpdate);
     
-int GetNodeAddress();
+int EncoderGetNodeAddress();
 void SetNodeAddress(int nodeAddress);
     
-int GetNodeUpdate();
+int EncoderGetNodeUpdate();
 void SetNodeUpdate(int nodeUpdate);
     
-int GetAutoBaudEnable();
+int EncoderGetAutoBaudEnable();
 void SetAutoBaudEnable(int autoBaudEnable);
     
-int GetAutoBaudTimeout();
+int EncoderGetAutoBaudTimeout();
 void SetAutoBaudTimeout(int autoBaudTimeout);
     
-int GetRestoreBusParameters();
+int EncoderGetRestoreBusParameters();
 void SetRestoreBusParameters(int restoreBusParameters);
     
-int GetTermination();
+int EncoderGetTermination();
 void SetTermination(int termination);
     
-int GetTermUpdate();
+int EncoderGetTermUpdate();
 void SetTermUpdate(int termUpdate);
                                     
 
 int _position;
         
-static const uint16_t regPositionH                      = 0x9C42;
-static const uint16_t regPositionL                      = 0x9C43;
-static const uint16_t regActualReverseState             = 0x9C44;
-static const uint16_t regTermResetState                 = 0x9C45;
-static const uint16_t regSpeedH                         = 0x9C46;
-static const uint16_t regSpeedL                         = 0x9C47;
-static const uint16_t regLimitSwitchState               = 0x9C48;
-static const uint16_t regPhysicalSTResolutionH          = 0x9C4D;
-static const uint16_t regPhysicalSTResolutionL          = 0x9C4E;
-static const uint16_t regPhysicalMTResolutionH          = 0x9C4F;
-static const uint16_t regPhysicalMTResolutionL          = 0x9C50;
+static const uint16_t encoderRegPositionH                      = 0x9C42;
+static const uint16_t encoderRegPositionL                      = 0x9C43;
+static const uint16_t encoderRegActualReverseState             = 0x9C44;
+static const uint16_t encoderRegTermResetState                 = 0x9C45;
+static const uint16_t encoderRegSpeedH                         = 0x9C46;
+static const uint16_t encoderRegSpeedL                         = 0x9C47;
+static const uint16_t encoderRegLimitSwitchState               = 0x9C48;
+static const uint16_t encoderRegPhysicalSTResolutionH          = 0x9C4D;
+static const uint16_t encoderRegPhysicalSTResolutionL          = 0x9C4E;
+static const uint16_t encoderRegPhysicalMTResolutionH          = 0x9C4F;
+static const uint16_t encoderRegPhysicalMTResolutionL          = 0x9C50;
    
-static const uint16_t regScalingEnabled                 = 0x9C51;
-static const uint16_t regSTResolutionH                  = 0x9C52;
-static const uint16_t regSTResolutionL                  = 0x9C53;
-static const uint16_t regTotResolutionH                 = 0x9C54;
-static const uint16_t regTotResolutionL                 = 0x9C55;
-static const uint16_t regPresetH                        = 0x9C56;
-static const uint16_t regPresetL                        = 0x9C57;
-static const uint16_t regOffsetH                        = 0x9C58;
-static const uint16_t regOffsetL                        = 0x9C59;
-static const uint16_t regCountDirection                 = 0x9C5A;
-static const uint16_t regSpeedMode                      = 0x9C5B;
-static const uint16_t regSpeedFilter                    = 0x9C5C;
-static const uint16_t regLimitSwitchEnable              = 0x9C5D;
-static const uint16_t regLowLimitSwitchH                = 0x9C5E;
-static const uint16_t regLowLimitSwitchL                = 0x9C5F;
-static const uint16_t regHighLimitSwitchH               = 0x9C60;
-static const uint16_t regHighLimitSwitchL               = 0x9C61;
-static const uint16_t regDelay                          = 0x9C62;
-static const uint16_t regErrorReg                       = 0x9C63;
-static const uint16_t regDeviceResetStore               = 0x9C63;
-static const uint16_t regParameters                     = 0x9C64;
-static const uint16_t regAutoStore                      = 0x9C65;
-static const uint16_t regRestoreAllParameters           = 0x9C66;
-static const uint16_t regRestoreAplicationParameters    = 0x9C67;
-static const uint16_t regAutoTest                       = 0x9C68;
-static const uint16_t regSoftwareVersion                = 0x9C69;
-static const uint16_t regSerialNumberH                  = 0x9C70;
-static const uint16_t regSerialNumberL                  = 0x9C71;
-static const uint16_t regLifeCycleCounter               = 0x9C72;
-static const uint16_t regRollCounter                    = 0x9C73;
-static const uint16_t regSerialParameters               = 0x9C78;
-static const uint16_t regCommUpdate                     = 0x9C82;
-static const uint16_t regNodeAddress                    = 0x9C83;
-static const uint16_t regNodeUpdate                     = 0x9C84;
-static const uint16_t regAutoBaudEnable                 = 0x9C85;
-static const uint16_t regAutoBaudTimeout                = 0x9C86;
-static const uint16_t regRestoreBusParameteres          = 0x9C87;
-static const uint16_t regTermination                    = 0x9C88;
-static const uint16_t regTermUpdate                     = 0x9C89;
+static const uint16_t encoderRegScalingEnabled                 = 0x9C51;
+static const uint16_t encoderRegSTResolutionH                  = 0x9C52;
+static const uint16_t encoderRegSTResolutionL                  = 0x9C53;
+static const uint16_t encoderRegTotResolutionH                 = 0x9C54;
+static const uint16_t encoderRegTotResolutionL                 = 0x9C55;
+static const uint16_t encoderRegPresetH                        = 0x9C56;
+static const uint16_t encoderRegPresetL                        = 0x9C57;
+static const uint16_t encoderRegOffsetH                        = 0x9C58;
+static const uint16_t encoderRegOffsetL                        = 0x9C59;
+static const uint16_t encoderRegCountDirection                 = 0x9C5A;
+static const uint16_t encoderRegSpeedMode                      = 0x9C5B;
+static const uint16_t encoderRegSpeedFilter                    = 0x9C5C;
+static const uint16_t encoderRegLimitSwitchEnable              = 0x9C5D;
+static const uint16_t encoderRegLowLimitSwitchH                = 0x9C5E;
+static const uint16_t encoderRegLowLimitSwitchL                = 0x9C5F;
+static const uint16_t encoderRegHighLimitSwitchH               = 0x9C60;
+static const uint16_t encoderRegHighLimitSwitchL               = 0x9C61;
+static const uint16_t encoderRegDelay                          = 0x9C62;
+static const uint16_t encoderRegErrorencoderReg                = 0x9C63;
+static const uint16_t encoderRegDeviceResetStore               = 0x9C63;
+static const uint16_t encoderRegParameters                     = 0x9C64;
+static const uint16_t encoderRegAutoStore                      = 0x9C65;
+static const uint16_t encoderRegRestoreAllParameters           = 0x9C66;
+static const uint16_t encoderRegRestoreAplicationParameters    = 0x9C67;
+static const uint16_t encoderRegAutoTest                       = 0x9C68;
+static const uint16_t encoderRegSoftwareVersion                = 0x9C69;
+static const uint16_t encoderRegSerialNumberH                  = 0x9C70;
+static const uint16_t encoderRegSerialNumberL                  = 0x9C71;
+static const uint16_t encoderRegLifeCycleCounter               = 0x9C72;
+static const uint16_t encoderRegRollCounter                    = 0x9C73;
+static const uint16_t encoderRegSerialParameters               = 0x9C78;
+static const uint16_t encoderRegCommUpdate                     = 0x9C82;
+static const uint16_t encoderRegNodeAddress                    = 0x9C83;
+static const uint16_t encoderRegNodeUpdate                     = 0x9C84;
+static const uint16_t encoderRegAutoBaudEnable                 = 0x9C85;
+static const uint16_t encoderRegAutoBaudTimeout                = 0x9C86;
+static const uint16_t encoderRegRestoreBusParameteres          = 0x9C87;
+static const uint16_t encoderRegTermination                    = 0x9C88;
+static const uint16_t encoderRegTermUpdate                     = 0x9C89;
         
