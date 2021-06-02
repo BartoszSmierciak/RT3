@@ -56,13 +56,32 @@ int EncoderClose()
 * EncoderGet encoder position.
 * \return position on success
 */
-int EncoderGetPosition();
-        
-int EncoderGetActualReverseState();
+
+//32 bit LSB + MSB
+uint32_t EncoderGetPosition(int slaveAddress)
+{
+    uint32_t positionH = EncoderSendModbus(slaveAddress, encoderRegPositionH, 1);
+    uint32_t positionL = EncoderSendModbus(slaveAddress, encoderRegPositionL, 1);
+    uint32_t position = 0;
+    position = positionL | positionH;
+    return position;
+}
+
+//8 bit MSB
+uint32_t EncoderGetActualReverseState(int slaveAddress)
+{
+    return EncoderSendModbus(slaveAddress, encoderRegActualReverseState, 1);
+}
+//8 bit MSB
+int EncoderGetTermResetState()
+{
+    return EncoderSendModbus(slaveAddress, encoderRegTermResetState, 1);
+} 
     
-int EncoderGetTermResetState();
+int EncoderGetSpeed()
+{
     
-int EncoderGetSpeed();
+}
     
 int EncoderGetLimitSwitchState();
     
