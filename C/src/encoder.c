@@ -27,15 +27,13 @@ int EncoderInit(const char *device,
         exit(1);
     }
 }
-uint16_t EncoderSendModbus(int slaveAddress, int regAddress, int regToRead)
+uint32_t EncoderReadModbus(int slaveAddress, int regAddress, int regToRead)
 {
-    //Set the Modbus address of the remote slave (to 3)
+    //Set the Modbus address of the remote slave 
     modbus_set_slave(ctx, slaveAddress);
 
-
-    uint16_t reg[regToRead];// will store read registers values
-
-    //Read 5 holding registers starting from address 10
+    uint32_t reg[regToRead];// will store read registers values
+    
     int num = modbus_read_registers(ctx, regAddress, regToRead, reg);
     if (num != regToRead) 
     {// number of read registers is not the one expected
@@ -45,147 +43,390 @@ uint16_t EncoderSendModbus(int slaveAddress, int regAddress, int regToRead)
     return reg;
 }
 
+int EncoderWriteModbus(int slaveAddress, int regAddress, uint32_t value)
+{
+    rc = modbus_write_register(ctx, regAddress, value);
+    if (rc != 1) 
+    {
+        printf("ERROR modbus_write_register (%d)\n", rc);
+        printf("Address = %d, value = %d (0x%X)\n", addr, value, value);        
+    }
+    return rc;
+}
 
-
-int EncoderClose()
+void EncoderClose()
 {
     modbus_close(ctx);
     modbus_free(ctx);
 }
+
 /*!
 * EncoderGet encoder position.
 * \return position on success
 */
-
-//32 bit LSB + MSB
+//2*32 bit MSB 0xFF00 LSB 0x00FF
 uint32_t EncoderGetPosition(int slaveAddress)
 {
     uint32_t positionH = EncoderSendModbus(slaveAddress, encoderRegPositionH, 1);
     uint32_t positionL = EncoderSendModbus(slaveAddress, encoderRegPositionL, 1);
-    uint32_t position = 0;
-    position = positionL | positionH;
-    return position;
+    _position = positionH | positionL;
+    return _position;
 }
 
-//8 bit MSB
+//8 bit MSB 0xF000
 uint32_t EncoderGetActualReverseState(int slaveAddress)
 {
-    return EncoderSendModbus(slaveAddress, encoderRegActualReverseState, 1);
+    _encoderActualReverseState = EncoderSendModbus(slaveAddress, encoderRegActualReverseState, 1);
+    return _encoderActualReverseState;
 }
 //8 bit MSB
-int EncoderGetTermResetState()
-{
-    return EncoderSendModbus(slaveAddress, encoderRegTermResetState, 1);
+uint32_t EncoderGetTermResetState()
+{ 
+    _encoderTermResetState = EncoderSendModbus(slaveAddress, encoderRegTermResetState, 1);
+    return _encoderTermResetState;
 } 
-    
-int EncoderGetSpeed()
+//2*32 bit MSB 0xFF00 LSB 0x00FF
+uint32_t EncoderGetSpeed()
 {
-    
+    _encoderSpeedH = EncoderSendModbus(slaveAddress, encoderRegSpeedH, 1);
+    _encoderSpeedL = EncoderSendModbus(slaveAddress, encoderRegSpeedL, 1);
+    _encoderSpeed = _encoderSpeedH | _encoderSpeedL;
+    return _encoderSpeed;
+}
+ 
+//8bit 0x000F
+uint32_t EncoderGetLimitSwitchState()
+{
+    _encoderLimitSwitchState = EncoderSendModbus(slaveAddress, encoderRegSwitchState, 1);
+    return _encoderLimitSwitchState;
+}
+ 
+//2*32 bit MSB 0xFF00 LSB 0x00FF
+uint32_t EncoderGetPhysicalSTResolution()
+{
+    _encoderPhysicalSTResolutionH = EncoderSendModbus(slaveAddress, encoderRegPhysicalSTResolutionH, 1);
+    _encoderPhysicalSTResolutionL = EncoderSendModbus(slaveAddress, encoderRegPhysicalSTResolutionL, 1);
+    _encoderPhysicalSTResolution = _encoderPhysicalSTResolutionH | _encoderPhysicalSTResolutionL;
+    return _encoderPhysicalSTResolution;
 }
     
-int EncoderGetLimitSwitchState();
-    
-int EncoderGetPhysicalSTResolution();
-    
-int EncoderGetPhysicalMTResolution();
+uint32_t EncoderGetPhysicalMTResolution(int slaveAddress)
+{
+    _encoderPhysicalMTResolutionH = EncoderSendModbus(slaveAddress, encoderRegPhysicalMTResolutionH, 1);
+    _encoderPhysicalMTResolutionL = EncoderSendModbus(slaveAddress, encoderRegPhysicalMTResolutionL, 1);
+    _encoderPhysicalMTResolution = _encoderPhysicalMTResolutionH | _encoderPhysicalMTResolutionL;
+    return _encoderPhysicalMTResolution;
+}
     
 /*!
 * EncoderGet scaling enabled.
+* 8 bit 0x000F
 * \return TODO
 */
-int EncoderGetScalingEnabled();
+uint32_t EncoderGetScalingEnabled(int slaveAddress)
+{
+    _encoderScalingEnabled = EncoderSendModbus(slaveAddress, encoderScalingEnabled, 1);
+    return _encoderScalingEnabled;
+}
     
 /*!
 * Set scaling enabled.
+* \param slaveAddress
 * \param scalingEnabled
 */
-void SetScalingEnabled(int scalingEnabled);
+void SetScalingEnabled(int slaveAddress, uint32_t scalingEnabled)
+{
+    _encoderScalingEnabled = scalingEnabled;
+    EncoderWriteModbus(slaveAddress, regScalingEnabled, _encoderScalingEnabled)
+}
     
-int EncoderGetSTResolution();
-void SetSTResolution(int stResolution);
+uint32_t EncoderGetSTResolution(int slaveAddress)
+{
+    _encoderSTResolutionH = EncoderSendModbus(slaveAddress, encoderRegSTResolutionH, 1);
+    _encoderSTResolutionL = EncoderSendModbus(slaveAddress, encoderRegSTResolutionL, 1);
+    _encoderSTResolution = _encoderSTResolutionH | _encoderSTResolutionL;
+    return _encoderSTResolution;
+}
+
+void SetSTResolution(int slaveAddress, uint32_t sTResolution)
+{
+    _encoderSTResolution = sTResolution;
+    EncoderWriteModbus(slaveAddress, regSTResolution, _encoderSTResolution);
+}
     
-int EncoderGetTotResolution();
-void SetTotResolution(int totResolution);
+uint32_t EncoderGetTotResolution(int slaveAddress)
+{
+    _encoderTotResolutionH = EncoderSendModbus(slaveAddress, encoderRegTotResolutionH, 1);
+    _encoderTotResolutionL = EncoderSendModbus(slaveAddress, encoderRegTotResolutionL, 1);
+    _encoderTotResolution = _encoderTotResolutionH | _encoderTotResolutionL;
+    return _encoderTotResolution;
+}
+
+void SetTotResolution(int slaveAddress, uint32_t totResolution)
+{
+    _encoderTotResolution = totResolution;
+    EncoderWriteModbus(slaveAddress, regTotResolution, _encodertotResolution);
+}
     
-int EncoderGetPreset();
-void SetPreset(int preset);
+uint32_t EncoderGetPreset()
+{
     
-int EncoderGetOffset();
+}
+void SetPreset(int slaveAddress, uint32_t preset)
+{
     
-int EncoderGetCountDirection();
-void SetCountDirection(int countDirection);
+}
     
-int EncoderGetSpeedMode();
-void SetSpeedMode(int speed);
+uint32_t EncoderGetOffset(int slaveAddress)
+{
     
-int EncoderGetSpeedFilter();
-void SetSpeedFilter(int speedLimit);
+}
     
-int EncoderGetLimitSwitchEnable();
-void SetLimitSwitchEnable(int limitSwitchEnable);
+uint32_t EncoderGetCountDirection(int slaveAddress
+{
     
-int EncoderGetLowLimitSwitch();
-void SetLowLimitSwitch(int lowLimitSwitch);
+}
+void SetCountDirection(int slaveAddress, uint32_t countDirection)
+{
     
-int EncoderGetHighLimitSwitch();
-void SetHighLimitSwitch(int highLimitSwitch);
+}
     
-int EncoderGetDelay();
-void SetDelay(int delay);
+uint32_t EncoderGetSpeedMode(int slaveAddress)
+{
     
-int EncoderGetErrorencoderReg();
-void SetErrorencoderReg(int errorencoderReg);
+}
+void SetSpeedMode(int slaveAddress, uint32_t speed)
+{
     
-int EncoderGetDeviceResetStore();
-void SetDeviceResetStore(int deviceResetStore);
+}
     
-int EncoderGetParameters();
-void SetParameters(int parameters);
+uint32_t EncoderGetSpeedFilter(int slaveAddress)
+{
     
-int EncoderGetAutoStore();
-void SetAutoStore(int autostore);
+}
+
+void SetSpeedFilter(int slaveAddress, uint32_t speedLimit)
+{
     
-int EncoderGetRestoreAllParameters();
-void SetRestoreAllParameters(int restoreAllParameters);
+}
     
-int EncoderGetRestoreAplicationParameters();
-void SteRestoteAplicationParameters(int restoreAplicationparameters);
+uint32_t EncoderGetLimitSwitchEnable(int slaveAddress)
+{
+    
+}
+
+void SetLimitSwitchEnable(int slaveAddress, uint32_t limitSwitchEnable)
+{
+    
+}
+    
+uint32_t EncoderGetLowLimitSwitch(int slaveAddress)
+{
+    
+}
+
+void SetLowLimitSwitch(int slaveAddress, uint32_t lowLimitSwitch)
+{
+    
+}
+
+uint32_t EncoderGetHighLimitSwitch(int slaveAddress)
+{
+    
+}
+
+void SetHighLimitSwitch(int slaveAddress, uint32_t highLimitSwitch)
+{
+    
+}
+    
+uint32_t EncoderGetDelay(int slaveAddress)
+{
+    
+}
+
+void SetDelay(int slaveAddress, uint32_t delay)
+{
+    
+}
+    
+uint32_t EncoderGetErrorencoderReg(int slaveAddress)
+{
+    
+}
+
+void SetErrorencoderReg(int slaveAddress, uint32_t errorencoderReg)
+{
+    
+}
+    
+uint32_t EncoderGetDeviceResetStore(int slaveAddress)
+{
+    
+}
+
+void SetDeviceResetStore(int slaveAddress, uint32_t deviceResetStore)
+{
+    
+}
+    
+uint32_t EncoderGetParameters(int slaveAddress)
+{
+    
+}
+
+void SetParameters(int slaveAddress, uint32_t parameters)   
+{
+    
+}
+    
+uint32_t EncoderGetAutoStore(int slaveAddress)
+{
+    
+}
+
+void SetAutoStore(int slaveAddress, uint32_t autostore)
+{
+    
+}
+    
+uint32_t EncoderGetRestoreAllParameters()
+{
+    
+}
+
+void SetRestoreAllParameters(int slaveAddress, uint32_t restoreAllParameters)
+{
+    
+}
+    
+uint32_t EncoderGetRestoreAplicationParameters(int slaveAddress)
+{
+    
+}
+
+void SteRestoteAplicationParameters(int slaveAddress, uint32_t restoreAplicationParameters)
+{
+    
+}
         
-int EncoderGetAutoTest();
-void SetAutoTest(int autoTest);
+uint32_t EncoderGetAutoTest(int slaveAddress)
+{
     
-int EncoderGetSoftwareVersion();
+}
+
+void SetAutoTest(int slaveAddress, uint32_t autoTest)
+{
+    
+}
+    
+uint32_t EncoderGetSoftwareVersion(int slaveAddress)
+{
+    
+}
         
-int EncoderGetSerialNumber();
+uint32_t EncoderGetSerialNumber(int slaveAddress)
+{
     
-int EncoderGetLifeCycleCounter();
+}
     
-int EncoderGetRollCounter();
+uint32_t EncoderGetLifeCycleCounter(int slaveAddress)
+{
+    
+}
+    
+uint32_t EncoderGetRollCounter(int slaveAddress)
+{
+    
+}
         
-int EncoderGetSerialParameters();
-void SetSerialParameters(int serialParameters);
+uint32_t EncoderGetSerialParameters(int slaveAddress)
+{
+    
+}
+
+void SetSerialParameters(int slaveAddress, uint32_t serialParameters)
+{
+    
+}
         
-int EncoderGetCommUpdate();
-void SetCommUpdate(int commUpdate);
+uint32_t EncoderGetCommUpdate(int slaveAddress)
+{
     
-int EncoderGetNodeAddress();
-void SetNodeAddress(int nodeAddress);
+}
+
+void SetCommUpdate(int slaveAddress, uint32_t commUpdate)
+{
     
-int EncoderGetNodeUpdate();
-void SetNodeUpdate(int nodeUpdate);
+}
     
-int EncoderGetAutoBaudEnable();
-void SetAutoBaudEnable(int autoBaudEnable);
+uint32_t EncoderGetNodeAddress(int slaveAddress)
+{
     
-int EncoderGetAutoBaudTimeout();
-void SetAutoBaudTimeout(int autoBaudTimeout);
+}
+
+void SetNodeAddress(int slaveAddress, uint32_t nodeAddress)
+{
     
-int EncoderGetRestoreBusParameters();
-void SetRestoreBusParameters(int restoreBusParameters);
+}
     
-int EncoderGetTermination();
-void SetTermination(int termination);
+uint32_t EncoderGetNodeUpdate(int slaveAddress)
+{
     
-int EncoderGetTermUpdate();
-void SetTermUpdate(int termUpdate);
+}
+
+void SetNodeUpdate(int slaveAddress, uint32_t nodeUpdate)
+{
+    
+}
+    
+uint32_t EncoderGetAutoBaudEnable(int slaveAddress)
+{
+    
+}
+
+void SetAutoBaudEnable(int slaveAddress, uint32_t autoBaudEnable)
+{
+    
+}
+    
+uint32_t EncoderGetAutoBaudTimeout(int slaveAddress)
+{
+    
+}
+
+void SetAutoBaudTimeout(int slaveAddress, uint32_t autoBaudTimeout)
+{
+    
+}
+    
+uint32_t EncoderGetRestoreBusParameters(int slaveAddress)
+{
+    
+}
+
+void SetRestoreBusParameters(int slaveAddress, uint32_t restoreBusParameters)
+{
+    
+}
+    
+uint32_t EncoderGetTermination(int slaveAddress)
+{
+    
+}
+
+void SetTermination(int slaveAddress, uint32_t termination)
+{
+    
+}
+    
+uint32_t EncoderGetTermUpdate(int slaveAddress)
+{
+    
+}
+
+void SetTermUpdate(int slaveAddress, uint32_t termUpdate)
+{
+    
+}
         
