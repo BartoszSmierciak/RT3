@@ -13,50 +13,75 @@
 modbus_t *ctx;
 
 /*!
-* EncoderGet encoder position.
-* \return position on success
+* Initialisation of encoder. Set parameters of connections and connect to encoder
+* \param device
+* \param baud
+* \param parity
+* \param data_bit
+* \param stop_bit
+* \return 0 on success
 */
-int EncoderInit(const char *device,
-                int baud, char parity, int data_bit,
-                int stop_bit);
+int EncoderInit(const char *device, int baud, char parity, int data_bit, int stop_bit);
 
-uint16_t EncoderSendModbus(int slaveAddress, int regAddress, int regToRead);
+uint32_t EncoderReadModbus(int slaveAddress, int regAddress, int regToRead);
 
+int EncoderWriteModbus(int slaveAddress, int regAddress, uint32_t value);
+
+//Close modbus connection
 int EncoderClose();
 
 /*!
-* EncoderGet encoder position.
+* Get encoder position.
+* Read two 32 bit high (MSB 0xFF00) and low (LSB 0x00FF) 
+* registers of position and return sum of them.
+* \param slaveAddress The node adress of the encoder
 * \return position on success
 */
-//2*32 bit MSB 0xFF00 LSB 0x00FF
 uint32_t EncoderGetPosition(int slaveAddress);
 
-//8 bit MSB 0xF000
+/*!
+* Get encoder reverse state.
+* Read 8 bit (MSB 0xF000) register of reverse state.
+* Actual State CW = 0, CCW = 1
+* Default is 0
+* \param slaveAddress The node adress of the encoder
+* \return Reverse state on success
+*/
 uint32_t EncoderGetActualReverseState(int slaveAddress);
 
-//8 bit MSB
-uint32_t EncoderGetTermReEncoderSetState();
+//8 bit MSB 0xF000
+//Termination on = 1, off = 0
+//Default is 1g
+uint32_t EncoderGetTermRestState();
 
 //2*32 bit MSB 0xFF00 LSB 0x00FF
 uint32_t EncoderGetSpeed(int slaveAddress);
 
 //8bit 0x000F
+//default 0
 uint32_t EncoderGetLimitSwitchState(int slaveAddress);
 
 //2*32 bit MSB 0xFF00 LSB 0x00FF
+//defalt
+//H 0
+//L 8192
 uint32_t EncoderGetPhysicalSTResolution(int slaveAddress);
 
+//2*32 bit MSB 0xFF00 LSB 0x00FF 
+//defalt
+//H 0
+//L 4096
 uint32_t EncoderGetPhysicalMTResolution(int slaveAddress);
 
 /*!
-* EncoderGet scaling enabled.
+* Get scaling enabled.
 * 8 bit 0x000F
 * \return TODO
 */
 uint32_t EncoderGetScalingEnabled(int slaveAddress);
 
 /*!
-* EncoderSet scaling enabled.
+* Set scaling enabled.
 * \param slaveAddress
 * \param scalingEnabled
 */
