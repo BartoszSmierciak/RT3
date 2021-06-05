@@ -67,9 +67,9 @@ void EncoderClose()
 //2*32 bit MSB 0xFF00 LSB 0x00FF
 uint32_t EncoderGetPosition(int slaveAddress)
 {
-    _positionH = EncoderSendModbus(slaveAddress, encoderRegPositionH, 1);
-    _positionL = EncoderSendModbus(slaveAddress, encoderRegPositionL, 1);
-    _position = positionH | positionL;
+    _encoderPositionH = EncoderSendModbus(slaveAddress, encoderRegPositionH, 1);
+    _encoderPositionL = EncoderSendModbus(slaveAddress, encoderRegPositionL, 1);
+    _encoderPosition = _encoderPositionH | _encoderPositionL;
     return _position;
 }
 
