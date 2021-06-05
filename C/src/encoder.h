@@ -7,6 +7,7 @@
 */
 #include <modbus.h>
 #include "encoderRegisters.h"
+#include "encoderPrivate.h"
 
 //Modbus contex
 modbus_t *ctx;
@@ -175,8 +176,6 @@ uint32_t EncoderGetTermUpdate(int slaveAddress);
 
 void SetTermUpdate(int slaveAddress, uint32_t termUpdate);
                                     
-
-int _position;
         
 
         
