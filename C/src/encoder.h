@@ -51,7 +51,7 @@ uint32_t EncoderGetActualReverseState(int slaveAddress);
 
 //8 bit MSB 0xF000
 //Termination on = 1, off = 0
-//Default is 1g
+//Default is 1
 uint32_t EncoderGetTermRestState();
 
 //2*32 bit MSB 0xFF00 LSB 0x00FF
@@ -164,15 +164,28 @@ uint32_t EncoderGetSerialNumber(int slaveAddress);
 uint32_t EncoderGetLifeCycleCounter(int slaveAddress);
  
 uint32_t EncoderGetRollCounter(int slaveAddress);
-   
-uint32_t EncoderGetSerialParameters(int slaveAddress);
 
-void EncoderSetSerialParameters(int slaveAddress, uint32_t serialParameters);
+uint32_t EncoderGetBaudrate(int slaveAddress)
+
+void EncoderSetBaudrate(int slaveAddress, uint32_t baudrate);
+
+uint32_t EncoderGetNumberData(int slaveAddress);
+
+void EncoderSetNumberData(int slaveAddress, uint32_t numberData);
+
+uint32_t EncoderParity(int slaveAddress);
+
+void EncoderSetParity(int slaveAddress, uint32_t parity);
+
+uint32_t EncoderGetStopbits(int slaveAddress);
+
+void EncoderSetStopbits(int slaveAddress, uint32_t stopbits);
         
 uint32_t EncoderGetCommUpdate(int slaveAddress);
 
 void EncoderSetCommUpdate(int slaveAddress, uint32_t commUpdate);
-    
+
+///MSB RW 8bit Node-ID 1...247 (1..0xF7)127
 uint32_t EncoderGetNodeAddress(int slaveAddress);
 
 void EncoderSetNodeAddress(int slaveAddress, uint32_t nodeAddress);
