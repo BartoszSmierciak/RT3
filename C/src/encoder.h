@@ -165,7 +165,7 @@ uint32_t EncoderGetLifeCycleCounter(int slaveAddress);
  
 uint32_t EncoderGetRollCounter(int slaveAddress);
 
-uint32_t EncoderGetBaudrate(int slaveAddress)
+uint32_t EncoderGetBaudrate(int slaveAddress);
 
 void EncoderSetBaudrate(int slaveAddress, uint32_t baudrate);
 
