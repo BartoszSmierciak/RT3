@@ -7,49 +7,54 @@
 */
 
 //"/dev/ttyS0", 9600, 'N', 8, 1
+#include <stdio.h>
+#include <stdlib.h>
+#include "encoder.h"
+#include "encoderRegisters.h"
+#include "encoderPrivate.h"
+
 int EncoderInit(const char *device, int baud, char parity, int data_bit, int stop_bit)
 {
     //Create a new RTU context with proper serial parameters (in this example,
     //device name /dev/ttyS0, baud rate 9600, no parity bit, 8 data bits, 1 stop bit)
     modbus_t *ctx = modbus_new_rtu(device, baud, parity, data_bit, stop_bit);
-    if (!ctx) 
+    if (!ctx)
     {
-        fprintf(stderr, "Failed to create the context: %s\n", modbus_strerror(errno));
+        fprintf(stderr, "Failed to create the context\n");
         exit(1);
     }
 
-    if (modbus_connect(ctx) == -1) 
+    if (modbus_connect(ctx) == -1)
     {
-        fprintf(stderr, "Unable to connect: %s\n", modbus_strerror(errno));
+        fprintf(stderr, "Unable to connect\n");
         modbus_free(ctx);
         exit(1);
     }
 }
-uint32_t EncoderReadModbus(int slaveAddress, int regAddress, int regToRead)
+uint16_t EncoderReadModbus(int slaveAddress, int regAddress)
 {
-    //Set the Modbus address of the remote slave 
+    //Set the Modbus address of the remote slave
     modbus_set_slave(ctx, slaveAddress);
 
-    uint32_t reg[regToRead];// will store read registers values
-    
-    int num = modbus_read_registers(ctx, regAddress, regToRead, reg);
-    if (num != regToRead) 
-    {// number of read registers is not the one expected
-        fprintf(stderr, "Failed to read: %s\n", modbus_strerror(errno));
-    }
+    uint16_t reg;// will store read registers values
 
+    int num = modbus_read_registers(ctx, regAddress, 1, &reg);
+    if (num != 1)
+    {// number of read registers is not the one expected
+        fprintf(stderr, "Failed to read modbus");
+    }
     return reg;
 }
 
-int EncoderWriteModbus(int slaveAddress, int regAddress, uint32_t value)
+int EncoderWriteModbus(int slaveAddress, int regAddress, uint16_t value)
 {
-    rc = modbus_write_register(ctx, regAddress, value);
-    if (rc != 1) 
+    int modbusAnswear = modbus_write_register(ctx, regAddress, value);
+    if (modbusAnswear != 1)
     {
-        printf("ERROR modbus_write_register (%d)\n", rc);
-        printf("Address = %d, value = %d (0x%X)\n", addr, value, value);        
+        printf("ERROR modbus_write_register (%d)\n", modbusAnswear);
+        printf("Address = %d, value = %d (0x%X)\n", regAddress, value, value);
     }
-    return rc;
+    return modbusAnswear;
 }
 
 void EncoderClose()
@@ -60,84 +65,78 @@ void EncoderClose()
 
 uint32_t EncoderGetPosition(int slaveAddress)
 {
-    _encoderPositionH = EncoderSendModbus(slaveAddress, encoderRegPositionH, 1);
-    _encoderPositionL = EncoderSendModbus(slaveAddress, encoderRegPositionL, 1);
-    _encoderPosition = _encoderPositionH | _encoderPositionL;
-    return _position;
+    _encoderPositionH = EncoderReadModbus(slaveAddress, encoderRegPositionH);
+    _encoderPositionL = EncoderReadModbus(slaveAddress, encoderRegPositionL);
+    _encoderPosition = (_encoderPositionH << 16) | _encoderPositionL;
+    return _encoderPosition;
 }
 
 uint32_t EncoderGetActualReverseState(int slaveAddress)
 {
-    _encoderActualReverseState = EncoderSendModbus(slaveAddress, encoderRegActualReverseState, 1);
+    _encoderActualReverseState = EncoderReadModbus(slaveAddress, encoderRegActualReverseState);
     return _encoderActualReverseState;
 }
 
-uint32_t EncoderGetTermResetState()
-{ 
-    _encoderTermResetState = EncoderSendModbus(slaveAddress, encoderRegTermResetState, 1);
-    return _encoderTermResetState;
-} 
-
-uint32_t EncoderGetSpeed()
+uint32_t EncoderGetTermResetState(int slaveAddress)
 {
-    _encoderSpeedH = EncoderSendModbus(slaveAddress, encoderRegSpeedH, 1);
-    _encoderSpeedL = EncoderSendModbus(slaveAddress, encoderRegSpeedL, 1);
+    _encoderTermResetState = EncoderReadModbus(slaveAddress, encoderRegTermResetState);
+    return _encoderTermResetState;
+}
+
+uint32_t EncoderGetSpeed(int slaveAddress)
+{
+    _encoderSpeedH = EncoderReadModbus(slaveAddress, encoderRegSpeedH);
+    _encoderSpeedL = EncoderReadModbus(slaveAddress, encoderRegSpeedL);
     _encoderSpeed = _encoderSpeedH | _encoderSpeedL;
     return _encoderSpeed;
 }
 
-uint32_t EncoderGetLimitSwitchState()
+uint32_t EncoderGetLimitSwitchState(int slaveAddress)
 {
-    _encoderLimitSwitchState = EncoderSendModbus(slaveAddress, encoderRegSwitchState, 1);
+    _encoderLimitSwitchState = EncoderReadModbus(slaveAddress, encoderRegLimitSwitchState);
     return _encoderLimitSwitchState;
 }
 
-uint32_t EncoderGetPhysicalSTResolution()
+uint32_t EncoderGetPhysicalSTResolution(int slaveAddress)
 {
-    _encoderPhysicalSTResolutionH = EncoderSendModbus(slaveAddress, encoderRegPhysicalSTResolutionH, 1);
-    _encoderPhysicalSTResolutionL = EncoderSendModbus(slaveAddress, encoderRegPhysicalSTResolutionL, 1);
+    _encoderPhysicalSTResolutionH = EncoderReadModbus(slaveAddress, encoderRegPhysicalSTResolutionH);
+    _encoderPhysicalSTResolutionL = EncoderReadModbus(slaveAddress, encoderRegPhysicalSTResolutionL);
     _encoderPhysicalSTResolution = _encoderPhysicalSTResolutionH | _encoderPhysicalSTResolutionL;
     return _encoderPhysicalSTResolution;
 }
-    
+
 uint32_t EncoderGetPhysicalMTResolution(int slaveAddress)
 {
-    _encoderPhysicalMTResolutionH = EncoderSendModbus(slaveAddress, encoderRegPhysicalMTResolutionH, 1);
-    _encoderPhysicalMTResolutionL = EncoderSendModbus(slaveAddress, encoderRegPhysicalMTResolutionL, 1);
+    _encoderPhysicalMTResolutionH = EncoderReadModbus(slaveAddress, encoderRegPhysicalMTResolutionH);
+    _encoderPhysicalMTResolutionL = EncoderReadModbus(slaveAddress, encoderRegPhysicalMTResolutionL);
     _encoderPhysicalMTResolution = _encoderPhysicalMTResolutionH | _encoderPhysicalMTResolutionL;
     return _encoderPhysicalMTResolution;
 }
 
 uint32_t EncoderGetScalingEnabled(int slaveAddress)
 {
-    _encoderScalingEnabled = EncoderSendModbus(slaveAddress, encoderScalingEnabled, 1);
+    _encoderScalingEnabled = EncoderReadModbus(slaveAddress, encoderRegScalingEnabled);
     return _encoderScalingEnabled;
 }
 
 void EncoderSetScalingEnabled(int slaveAddress, uint32_t scalingEnabled)
 {
     _encoderScalingEnabled = scalingEnabled;
-    EncoderWriteModbus(slaveAddress, regScalingEnabled, _encoderScalingEnabled)
+    EncoderWriteModbus(slaveAddress, encoderRegScalingEnabled, _encoderScalingEnabled);
 }
-    
+
 uint32_t EncoderGetSTResolution(int slaveAddress)
 {
-    _encoderSTResolutionH = EncoderSendModbus(slaveAddress, encoderRegSTResolutionH, 1);
-    _encoderSTResolutionL = EncoderSendModbus(slaveAddress, encoderRegSTResolutionL, 1);
+    _encoderSTResolutionH = EncoderReadModbus(slaveAddress, encoderRegSTResolutionH);
+    _encoderSTResolutionL = EncoderReadModbus(slaveAddress, encoderRegSTResolutionL);
     _encoderSTResolution = _encoderSTResolutionH | _encoderSTResolutionL;
     return _encoderSTResolution;
 }
 
-void EncoderSetSTResolution(int slaveAddress, uint32_t sTResolution)
-{
-    _encoderSTResolution = sTResolution;
-    EncoderWriteModbus(slaveAddress, regSTResolution, _encoderSTResolution);
-}
-    
 uint32_t EncoderGetTotResolution(int slaveAddress)
 {
-    _encoderTotResolutionH = EncoderSendModbus(slaveAddress, encoderRegTotResolutionH, 1);
-    _encoderTotResolutionL = EncoderSendModbus(slaveAddress, encoderRegTotResolutionL, 1);
+    _encoderTotResolutionH = EncoderReadModbus(slaveAddress, encoderRegTotResolutionH);
+    _encoderTotResolutionL = EncoderReadModbus(slaveAddress, encoderRegTotResolutionL);
     _encoderTotResolution = _encoderTotResolutionH | _encoderTotResolutionL;
     return _encoderTotResolution;
 }
@@ -145,13 +144,14 @@ uint32_t EncoderGetTotResolution(int slaveAddress)
 void EncoderSetTotResolution(int slaveAddress, uint32_t totResolution)
 {
     _encoderTotResolution = totResolution;
-    EncoderWriteModbus(slaveAddress, regTotResolution, _encoderTotResolution);
+    EncoderWriteModbus(slaveAddress, encoderRegTotResolutionL, _encoderTotResolution | 0x00FF);
+    EncoderWriteModbus(slaveAddress, encoderRegTotResolutionH, (_encoderTotResolution | 0xFF00) >> 16);
 }
 
 uint32_t EncoderGetPreset(int slaveAddress)
 {
-    _encoderPresetH = EncoderSendModbus(slaveAddress, encoderRegPresetH, 1);
-    _encoderPresetL = EncoderSendModbus(slaveAddress, encoderRegPresetL, 1);
+    _encoderPresetH = EncoderReadModbus(slaveAddress, encoderRegPresetH);
+    _encoderPresetL = EncoderReadModbus(slaveAddress, encoderRegPresetL);
     _encoderPreset = _encoderPresetH | _encoderPresetL;
     return _encoderPreset;
 }
@@ -159,84 +159,86 @@ uint32_t EncoderGetPreset(int slaveAddress)
 void EncoderSetPreset(int slaveAddress, uint32_t preset)
 {
     _encoderPreset = preset;
-    EncoderWriteModbus(slaveAddress, regPreset, _encoderPreset);
-}
+    EncoderWriteModbus(slaveAddress, encoderRegPresetL, _encoderPreset | 0x00FF);
+    EncoderWriteModbus(slaveAddress, encoderRegPresetH, (_encoderPreset | 0xFF00) >> 16);
     
+}
+
 uint32_t EncoderGetOffset(int slaveAddress)
 {
-    _encoderOffsetH = EncoderSendModbus(slaveAddress, encoderRegOffsetH, 1);
-    _encoderOffsetL = EncoderSendModbus(slaveAddress, encoderRegOffsetL, 1);
+    _encoderOffsetH = EncoderReadModbus(slaveAddress, encoderRegOffsetH);
+    _encoderOffsetL = EncoderReadModbus(slaveAddress, encoderRegOffsetL);
     _encoderOffset = _encoderOffsetH | _encoderOffsetL;
     return _encoderOffset;
 }
-    
+
 uint32_t EncoderGetCountDirection(int slaveAddress)
 {
-    _encoderCountDirection = EncoderSendModbus(slaveAddress, encoderRegCountDirection, 1);
+    _encoderCountDirection = EncoderReadModbus(slaveAddress, encoderRegCountDirection);
     return _encoderCountDirection;
 }
 
 void EncoderSetCountDirection(int slaveAddress, uint32_t countDirection)
 {
     _encoderCountDirection = countDirection;
-    EncoderWriteModbus(slaveAddress, regTotResolution, _encoderCountDirection);
+    EncoderWriteModbus(slaveAddress, encoderRegCountDirection, _encoderCountDirection);
 }
-    
+
 uint32_t EncoderGetSpeedMode(int slaveAddress)
 {
-    _encoderSpeedMode = EncoderSendModbus(slaveAddress, encoderRegSpeedMode, 1);
+    _encoderSpeedMode = EncoderReadModbus(slaveAddress, encoderRegSpeedMode);
     return _encoderSpeedMode;
 }
 
 void EncoderSetSpeedMode(int slaveAddress, uint32_t speedMode)
 {
-    _encoderSpeedMode = SpeedMode;
-    EncoderWriteModbus(slaveAddress, regSpeedMode, _encoderSpeedMode);
+    _encoderSpeedMode = speedMode;
+    EncoderWriteModbus(slaveAddress, encoderRegSpeedMode, _encoderSpeedMode);
 }
-    
+
 uint32_t EncoderGetSpeedFilter(int slaveAddress)
 {
-    _encoderSpeedFilter = EncoderSendModbus(slaveAddress, encoderRegSpeedFilter, 1);
+    _encoderSpeedFilter = EncoderReadModbus(slaveAddress, encoderRegSpeedFilter);
     return _encoderSpeedFilter;
 }
 
 void EncoderSetSpeedFilter(int slaveAddress, uint32_t speedFilter)
 {
     _encoderSpeedFilter = speedFilter;
-    EncoderWriteModbus(slaveAddress, regSpeedFilter, _encoderSpeedFilter);
+    EncoderWriteModbus(slaveAddress, encoderRegSpeedFilter, _encoderSpeedFilter);
 }
-    
+
 uint32_t EncoderGetLimitSwitchEnable(int slaveAddress)
 {
-    _encoderLimitSwitchEnable = EncoderSendModbus(slaveAddress, encoderRegLimitSwitchEnable, 1);
+    _encoderLimitSwitchEnable = EncoderReadModbus(slaveAddress, encoderRegLimitSwitchEnable);
     return _encoderLimitSwitchEnable;
 }
 
 void EncoderSetLimitSwitchEnable(int slaveAddress, uint32_t limitSwitchEnable)
 {
-    _encoderTotResolution = totResolution;
-    EncoderWriteModbus(slaveAddress, regTotResolution, _encodertotResolution);
+    _encoderLimitSwitchEnable = limitSwitchEnable;
+    EncoderWriteModbus(slaveAddress, encoderRegLimitSwitchEnable, _encoderLimitSwitchEnable);
 }
-    
+
 uint32_t EncoderGetLowLimitSwitch(int slaveAddress)
 {
-    _encoderLowLimitSwitchH = EncoderSendModbus(slaveAddress, encoderRegLowLimitSwitchH, 1);
-    _encoderLowLimitSwitchL = EncoderSendModbus(slaveAddress, encoderRegLowLimitSwitchL, 1);
+    _encoderLowLimitSwitchH = EncoderReadModbus(slaveAddress, encoderRegLowLimitSwitchH);
+    _encoderLowLimitSwitchL = EncoderReadModbus(slaveAddress, encoderRegLowLimitSwitchL);
     _encoderLowLimitSwitch = _encoderLowLimitSwitchH | _encoderLowLimitSwitchL;
     return _encoderLowLimitSwitch;
-}
 }
 
 void EncoderSetLowLimitSwitch(int slaveAddress, uint32_t lowLimitSwitch)
 {
     _encoderLowLimitSwitch = lowLimitSwitch;
-    EncoderWriteModbus(slaveAddress, regLowLimitSwitch, _encoderLowLimitSwitch);
+    EncoderWriteModbus(slaveAddress, encoderRegLowLimitSwitchL, _encoderLowLimitSwitch | 0x00FF);
+    EncoderWriteModbus(slaveAddress, encoderRegLowLimitSwitchH, (_encoderLowLimitSwitch | 0xFF00) >> 16);
 }
 
 uint32_t EncoderGetHighLimitSwitch(int slaveAddress)
 {
-    _encoderHighLimitSwitchH = EncoderSendModbus(slaveAddress, encoderRegHighLimitSwitchH, 1);
-    _encoderHighLimitSwitchL = EncoderSendModbus(slaveAddress, encoderRegHighLimitSwitchL, 1);
+    _encoderHighLimitSwitchH = EncoderReadModbus(slaveAddress, encoderRegHighLimitSwitchH);
+    _encoderHighLimitSwitchL = EncoderReadModbus(slaveAddress, encoderRegHighLimitSwitchL);
     _encoderHighLimitSwitch = _encoderHighLimitSwitchH | _encoderHighLimitSwitchL;
     return _encoderHighLimitSwitch;
 }
@@ -244,136 +246,137 @@ uint32_t EncoderGetHighLimitSwitch(int slaveAddress)
 void EncoderSetHighLimitSwitch(int slaveAddress, uint32_t highLimitSwitch)
 {
     _encoderHighLimitSwitch = highLimitSwitch;
-    EncoderWriteModbus(slaveAddress, regHighLimitSwitch, _encoderHighLimitSwitch);
+    EncoderWriteModbus(slaveAddress, encoderRegHighLimitSwitchL, _encoderHighLimitSwitch | 0x00FF);
+    EncoderWriteModbus(slaveAddress, encoderRegHighLimitSwitchH, (_encoderHighLimitSwitch | 0x00FF ) >> 16);
 }
-    
+
 uint32_t EncoderGetDelay(int slaveAddress)
 {
-    _encoderDelay = EncoderSendModbus(slaveAddress, encoderRegDelay, 1);
+    _encoderDelay = EncoderReadModbus(slaveAddress, encoderRegDelay);
     return _encoderDelay;
 }
 
 void EncoderSetDelay(int slaveAddress, uint32_t delay)
 {
     _encoderDelay = delay;
-    EncoderWriteModbus(slaveAddress, regDelay, _encoderDelay);
+    EncoderWriteModbus(slaveAddress, encoderRegDelay, _encoderDelay);
 }
-    
+
 uint32_t EncoderGetErrorReg(int slaveAddress)
 {
-    _encoderErrorReg = EncoderSendModbus(slaveAddress, encoderRegErrorReg, 1);
+    _encoderErrorReg = EncoderReadModbus(slaveAddress, encoderRegErrorReg);
     return _encoderErrorReg;
 }
 
 void EncoderSetErrorReg(int slaveAddress, uint32_t errorReg)
 {
     _encoderErrorReg = errorReg;
-    EncoderWriteModbus(slaveAddress, regErrorReg, _encoderErrorReg);
+    EncoderWriteModbus(slaveAddress, encoderRegErrorReg, _encoderErrorReg);
 }
-    
+
 uint32_t EncoderGetDeviceResetStore(int slaveAddress)
 {
-    _encoderDeviceResetStore = EncoderSendModbus(slaveAddress, encoderRegDeviceResetStore, 1);
+    _encoderDeviceResetStore = EncoderReadModbus(slaveAddress, encoderRegDeviceResetStore);
     return _encoderDeviceResetStore;
 }
 
 void EncoderSetDeviceResetStore(int slaveAddress, uint32_t deviceResetStore)
 {
     _encoderDeviceResetStore = deviceResetStore;
-    EncoderWriteModbus(slaveAddress, regDeviceResetStore, _encoderDeviceResetStore);
+    EncoderWriteModbus(slaveAddress, encoderRegDeviceResetStore, _encoderDeviceResetStore);
 }
-    
+
 uint32_t EncoderGetParameters(int slaveAddress)
 {
-    _encoderParameters = EncoderSendModbus(slaveAddress, encoderRegParameters, 1);
+    _encoderParameters = EncoderReadModbus(slaveAddress, encoderRegParameters);
     return _encoderParameters;
 }
 
-void EncoderSetParameters(int slaveAddress, uint32_t parameters)   
+void EncoderSetParameters(int slaveAddress, uint32_t parameters)
 {
     _encoderParameters = parameters;
-    EncoderWriteModbus(slaveAddress, regParameters, _encoderParameters);
+    EncoderWriteModbus(slaveAddress, encoderRegParameters, _encoderParameters);
 }
-    
+
 uint32_t EncoderGetAutoStore(int slaveAddress)
 {
-    _encoderAutoStore = EncoderSendModbus(slaveAddress, encoderRegAutoStore, 1);
+    _encoderAutoStore = EncoderReadModbus(slaveAddress, encoderRegAutoStore);
     return _encoderAutoStore;
 }
 
-void EncoderSetAutoStore(int slaveAddress, uint32_t autostore)
+void EncoderSetAutoStore(int slaveAddress, uint32_t autoStore)
 {
     _encoderAutoStore = autoStore;
-    EncoderWriteModbus(slaveAddress, regAutoStore, _encoderAutoStore);
+    EncoderWriteModbus(slaveAddress, encoderRegAutoStore, _encoderAutoStore);
 }
-    
-uint32_t EncoderGetRestoreAllParameters()
+
+uint32_t EncoderGetRestoreAllParameters(int slaveAddress)
 {
-    _encoderRestoreAllParameters = EncoderSendModbus(slaveAddress, encoderRegRestoreAllParameters, 1);
+    _encoderRestoreAllParameters = EncoderReadModbus(slaveAddress, encoderRegRestoreAllParameters);
     return _encoderRestoreAllParameters;
 }
 
 void EncoderSetRestoreAllParameters(int slaveAddress, uint32_t restoreAllParameters)
 {
     _encoderRestoreAllParameters = restoreAllParameters;
-    EncoderWriteModbus(slaveAddress, regRestoreAllParameters, _encoderRestoreAllParameters);
+    EncoderWriteModbus(slaveAddress, encoderRegRestoreAllParameters, _encoderRestoreAllParameters);
 }
-    
+
 uint32_t EncoderGetRestoreAplicationParameters(int slaveAddress)
 {
-    _encoderRestoreAplicationParameters = EncoderSendModbus(slaveAddress, encoderRegRestoreAplicationParameters, 1);
+    _encoderRestoreAplicationParameters = EncoderReadModbus(slaveAddress, encoderRegRestoreAplicationParameters);
     return _encoderRestoreAplicationParameters;
 }
 
 void SteRestoteAplicationParameters(int slaveAddress, uint32_t restoreAplicationParameters)
 {
     _encoderRestoreAplicationParameters = restoreAplicationParameters;
-    EncoderWriteModbus(slaveAddress, regRestoreAplicationParameters, _encoderRestoreAplicationParameters);
+    EncoderWriteModbus(slaveAddress, encoderRegRestoreAplicationParameters, _encoderRestoreAplicationParameters);
 }
-        
+
 uint32_t EncoderGetAutoTest(int slaveAddress)
 {
-    _encoderAutoTest = EncoderSendModbus(slaveAddress, encoderRegAutoTest, 1);
+    _encoderAutoTest = EncoderReadModbus(slaveAddress, encoderRegAutoTest);
     return _encoderAutoTest;
 }
 
 void EncoderSetAutoTest(int slaveAddress, uint32_t autoTest)
 {
     _encoderAutoTest = autoTest;
-    EncoderWriteModbus(slaveAddress, regAutoTest, _encoderAutoTest);
+    EncoderWriteModbus(slaveAddress, encoderRegAutoTest, _encoderAutoTest);
 }
     
 uint32_t EncoderGetSoftwareVersion(int slaveAddress)
 {
-    _encoderSoftwareVersion = EncoderSendModbus(slaveAddress, encoderRegSoftwareVersion, 1);
+    _encoderSoftwareVersion = EncoderReadModbus(slaveAddress, encoderRegSoftwareVersion);
     return _encoderSoftwareVersion;
 }
         
 uint32_t EncoderGetSerialNumber(int slaveAddress)
 {
-    _encoderSerialNumberH = EncoderSendModbus(slaveAddress, encoderRegSerialNumberH, 1);
-    _encoderSerialNumberL = EncoderSendModbus(slaveAddress, encoderRegSerialNumberL, 1);
+    _encoderSerialNumberH = EncoderReadModbus(slaveAddress, encoderRegSerialNumberH);
+    _encoderSerialNumberL = EncoderReadModbus(slaveAddress, encoderRegSerialNumberL);
     _encoderSerialNumber = _encoderSerialNumberH | _encoderSerialNumberL;
     return _encoderSerialNumber;
 }
     
 uint32_t EncoderGetLifeCycleCounter(int slaveAddress)
 {
-    _encoderLifeCycleCounterH = EncoderSendModbus(slaveAddress, encoderRegLifeCycleCounterH, 1);
-    _encoderLifeCycleCounterL = EncoderSendModbus(slaveAddress, encoderRegLifeCycleCounterL, 1);
+    _encoderLifeCycleCounterH = EncoderReadModbus(slaveAddress, encoderRegLifeCycleCounterH);
+    _encoderLifeCycleCounterL = EncoderReadModbus(slaveAddress, encoderRegLifeCycleCounterL);
     _encoderLifeCycleCounter = _encoderLifeCycleCounterH | _encoderLifeCycleCounterL;
     return _encoderLifeCycleCounter;
 }
     
 uint32_t EncoderGetRollCounter(int slaveAddress)
 {
-    _encoderRollCounter = EncoderSendModbus(slaveAddress, encoderRegRollCounter, 1);
+    _encoderRollCounter = EncoderReadModbus(slaveAddress, encoderRegRollCounter);
     return _encoderRollCounter;
 }
         
 uint32_t EncoderGetBaudrate(int slaveAddress)
 {
-    _encoderBaudrate = EncoderSendModbus(slaveAddress, encoderRegBaudrate, 1);
+    _encoderBaudrate = EncoderReadModbus(slaveAddress, encoderRegBaudrate);
     return _encoderBaudrate;
 }
 
@@ -385,7 +388,7 @@ void EncoderSetBaudrate(int slaveAddress, uint32_t baudrate)
 
 uint32_t EncoderGetNumberData(int slaveAddress)
 {
-    _encoderNumberData = EncoderSendModbus(slaveAddress, encoderRegNumberData, 1);
+    _encoderNumberData = EncoderReadModbus(slaveAddress, encoderRegNumberData);
     return _encoderNumberData;
 }
 
@@ -397,7 +400,7 @@ void EncoderSetNumberData(int slaveAddress, uint32_t numberData)
 
 uint32_t EncoderParity(int slaveAddress)
 {
-    _encoderParity = EncoderSendModbus(slaveAddress, encoderRegParity, 1);
+    _encoderParity = EncoderReadModbus(slaveAddress, encoderRegParity);
     return _encoderParity;
 }
 
@@ -409,7 +412,7 @@ void EncoderSetParity(int slaveAddress, uint32_t parity)
 
 uint32_t EncoderGetStopbits(int slaveAddress)
 {
-    _encoderStopbits = EncoderSendModbus(slaveAddress, encoderRegStopbits, 1);
+    _encoderStopbits = EncoderReadModbus(slaveAddress, encoderRegStopbits);
     return _encoderStopbits;
 }
 
@@ -420,96 +423,96 @@ void EncoderSetStopbits(int slaveAddress, uint32_t stopbits)
 }
 uint32_t EncoderGetCommUpdate(int slaveAddress)
 {
-    _encoderCommUpdate = EncoderSendModbus(slaveAddress, encoderRegCommUpdate, 1);
+    _encoderCommUpdate = EncoderReadModbus(slaveAddress, encoderRegCommUpdate);
     return _encoderCommUpdate;
 }
 
 void EncoderSetCommUpdate(int slaveAddress, uint32_t commUpdate)
 {
     _encoderCommUpdate = commUpdate;
-    EncoderWriteModbus(slaveAddress, regCommUpdate, _encoderCommUpdate);
+    EncoderWriteModbus(slaveAddress, encoderRegCommUpdate, _encoderCommUpdate);
 }
-    
+
 uint32_t EncoderGetNodeAddress(int slaveAddress)
 {
-    _encoderNodeAddress = EncoderSendModbus(slaveAddress, encoderRegNodeAddress, 1);
+    _encoderNodeAddress = EncoderReadModbus(slaveAddress, encoderRegNodeAddress);
     return _encoderNodeAddress;
 }
 
 void EncoderSetNodeAddress(int slaveAddress, uint32_t nodeAddress)
 {
-    _encoderNodeAddress = totResolution;
-    EncoderWriteModbus(slaveAddress, regTotResolution, _encodertotResolution);
+    _encoderNodeAddress = nodeAddress;
+    EncoderWriteModbus(slaveAddress, encoderRegNodeAddress, _encoderNodeAddress);
 }
-    
+
 uint32_t EncoderGetNodeUpdate(int slaveAddress)
 {
-    _encoderLimitSwitchState = EncoderSendModbus(slaveAddress, encoderRegSwitchState, 1);
-    return _encoderLimitSwitchState;
+    _encoderNodeUpdate = EncoderReadModbus(slaveAddress, encoderRegNodeUpdate);
+    return _encoderNodeUpdate;
 }
 
 void EncoderSetNodeUpdate(int slaveAddress, uint32_t nodeUpdate)
 {
-    _encoderTotResolution = totResolution;
-    EncoderWriteModbus(slaveAddress, regTotResolution, _encodertotResolution);
+    _encoderNodeUpdate = nodeUpdate;
+    EncoderWriteModbus(slaveAddress, encoderRegNodeUpdate, _encoderNodeUpdate);
 }
-    
+
 uint32_t EncoderGetAutoBaudEnable(int slaveAddress)
 {
-    _encoderLimitSwitchState = EncoderSendModbus(slaveAddress, encoderRegSwitchState, 1);
-    return _encoderLimitSwitchState;
+    _encoderAutoBaudEnable = EncoderReadModbus(slaveAddress, encoderRegAutoBaudEnable);
+    return _encoderAutoBaudEnable;
 }
 
 void EncoderSetAutoBaudEnable(int slaveAddress, uint32_t autoBaudEnable)
 {
-    _encoderTotResolution = totResolution;
-    EncoderWriteModbus(slaveAddress, regTotResolution, _encodertotResolution);
+    _encoderAutoBaudEnable = autoBaudEnable;
+    EncoderWriteModbus(slaveAddress, encoderRegAutoBaudEnable, _encoderAutoBaudEnable);
 }
-    
+
 uint32_t EncoderGetAutoBaudTimeout(int slaveAddress)
 {
-    _encoderLimitSwitchState = EncoderSendModbus(slaveAddress, encoderRegSwitchState, 1);
-    return _encoderLimitSwitchState;
+    _encoderAutoBaudTimeout = EncoderReadModbus(slaveAddress, encoderRegAutoBaudTimeout);
+    return _encoderAutoBaudTimeout;
 }
 
 void EncoderSetAutoBaudTimeout(int slaveAddress, uint32_t autoBaudTimeout)
 {
-    _encoderTotResolution = totResolution;
-    EncoderWriteModbus(slaveAddress, regTotResolution, _encodertotResolution);
+    _encoderAutoBaudTimeout = autoBaudTimeout;
+    EncoderWriteModbus(slaveAddress, encoderRegAutoBaudTimeout, _encoderAutoBaudTimeout);
 }
-    
+
 uint32_t EncoderGetRestoreBusParameters(int slaveAddress)
 {
-    _encoderLimitSwitchState = EncoderSendModbus(slaveAddress, encoderRegSwitchState, 1);
-    return _encoderLimitSwitchState;
+    _encoderRestoreBusParameters = EncoderReadModbus(slaveAddress, encoderRegRestoreBusParameters);
+    return _encoderRestoreBusParameters;
 }
 
 void EncoderSetRestoreBusParameters(int slaveAddress, uint32_t restoreBusParameters)
 {
-    _encoderTotResolution = totResolution;
-    EncoderWriteModbus(slaveAddress, regTotResolution, _encodertotResolution);
+    _encoderRestoreBusParameters = restoreBusParameters;
+    EncoderWriteModbus(slaveAddress, encoderRegRestoreBusParameters, _encoderRestoreBusParameters);
 }
-    
+
 uint32_t EncoderGetTermination(int slaveAddress)
 {
-    _encoderLimitSwitchState = EncoderSendModbus(slaveAddress, encoderRegSwitchState, 1);
-    return _encoderLimitSwitchState;
+    _encoderTermination = EncoderReadModbus(slaveAddress, encoderRegTermination);
+    return _encoderTermination;
 }
 
 void EncoderSetTermination(int slaveAddress, uint32_t termination)
 {
-    _encoderTotResolution = totResolution;
-    EncoderWriteModbus(slaveAddress, regTotResolution, _encodertotResolution);
+    _encoderTermination = termination;
+    EncoderWriteModbus(slaveAddress, encoderRegTermination, _encoderTermination);
 }
-    
+
 uint32_t EncoderGetTermUpdate(int slaveAddress)
 {
-    _encoderLimitSwitchState = EncoderSendModbus(slaveAddress, encoderRegSwitchState, 1);
-    return _encoderLimitSwitchState;
+    _encoderTermUpdate = EncoderReadModbus(slaveAddress, encoderRegTermUpdate);
+    return _encoderTermUpdate;
 }
 
 void EncoderSetTermUpdate(int slaveAddress, uint32_t termUpdate)
 {
-    _encoderTotResolution = totResolution;
-    EncoderWriteModbus(slaveAddress, regTotResolution, _encodertotResolution);
+    _encoderTermUpdate = termUpdate;
+    EncoderWriteModbus(slaveAddress, encoderRegTermUpdate, _encoderTermUpdate);
 }

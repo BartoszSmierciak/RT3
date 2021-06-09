@@ -5,9 +5,9 @@
 *
 * @brief A brief description of encoder.h.
 */
-#include <modbus.h>
-#include "encoderRegisters.h"
-#include "encoderPrivate.h"
+#include <modbus/modbus.h>
+//#include "encoderRegisters.h"
+//#include "encoderPrivate.h"
 
 //Modbus contex
 modbus_t *ctx;
@@ -23,12 +23,12 @@ modbus_t *ctx;
 */
 int EncoderInit(const char *device, int baud, char parity, int data_bit, int stop_bit);
 
-uint32_t EncoderReadModbus(int slaveAddress, int regAddress, int regToRead);
+uint16_t EncoderReadModbus(int slaveAddress, int regAddress);
 
-int EncoderWriteModbus(int slaveAddress, int regAddress, uint32_t value);
+int EncoderWriteModbus(int slaveAddress, int regAddress, uint16_t value);
 
 //Close modbus connection
-int EncoderClose();
+void EncoderClose();
 
 /*!
 * Get encoder position.
@@ -88,8 +88,6 @@ uint32_t EncoderGetScalingEnabled(int slaveAddress);
 void EncoderSetScalingEnabled(int slaveAddress, uint32_t scalingEnabled);
 
 uint32_t EncoderGetSTResolution(int slaveAddress);
-
-void EncoderSetSTResolution(int slaveAddress, uint32_t sTResolution);
 
 uint32_t EncoderGetTotResolution(int slaveAddress);
 
