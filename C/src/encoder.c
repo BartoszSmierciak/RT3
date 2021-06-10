@@ -9,9 +9,11 @@
 //"/dev/ttyS0", 9600, 'N', 8, 1
 #include <stdio.h>
 #include <stdlib.h>
+#include <modbus/modbus.h>
 #include "encoder.h"
 #include "encoderRegisters.h"
-#include "encoderPrivate.h"
+
+
 
 int EncoderInit(const char *device, int baud, char parity, int data_bit, int stop_bit)
 {
@@ -30,24 +32,28 @@ int EncoderInit(const char *device, int baud, char parity, int data_bit, int sto
         modbus_free(ctx);
         exit(1);
     }
+    return 0;
 }
+
 uint16_t EncoderReadModbus(int slaveAddress, int regAddress)
 {
     //Set the Modbus address of the remote slave
     modbus_set_slave(ctx, slaveAddress);
-
-    uint16_t reg;// will store read registers values
+    
+	// will store read registers values
+    uint16_t reg;
 
     int num = modbus_read_registers(ctx, regAddress, 1, &reg);
     if (num != 1)
-    {// number of read registers is not the one expected
-        fprintf(stderr, "Failed to read modbus");
+    {
+        fprintf(stderr, "Failed to read modbus\n");
     }
     return reg;
 }
 
 int EncoderWriteModbus(int slaveAddress, int regAddress, uint16_t value)
 {
+	modbus_set_slave(ctx, slaveAddress);
     int modbusAnswear = modbus_write_register(ctx, regAddress, value);
     if (modbusAnswear != 1)
     {
@@ -421,6 +427,7 @@ void EncoderSetStopbits(int slaveAddress, uint32_t stopbits)
     _encoderStopbits = stopbits;
     EncoderWriteModbus(slaveAddress, encoderRegStopbits, _encoderStopbits);
 }
+
 uint32_t EncoderGetCommUpdate(int slaveAddress)
 {
     _encoderCommUpdate = EncoderReadModbus(slaveAddress, encoderRegCommUpdate);

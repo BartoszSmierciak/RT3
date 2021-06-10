@@ -6,11 +6,82 @@
 * @brief A brief description of encoder.h.
 */
 #include <modbus/modbus.h>
+#include <stdint.h>
+#include "encoderPrivate.h"
 //#include "encoderRegisters.h"
-//#include "encoderPrivate.h"
+
 
 //Modbus contex
 modbus_t *ctx;
+
+uint32_t _encoderPositionH;
+uint32_t _encoderPositionL;
+uint32_t _encoderPosition;
+uint32_t _encoderActualReverseState;
+uint32_t _encoderTermResetState;
+uint32_t _encoderSpeedH;
+uint32_t _encoderSpeedL;
+uint32_t _encoderSpeed;
+uint32_t _encoderLimitSwitchState;
+uint32_t _encoderPhysicalSTResolutionH;
+uint32_t _encoderPhysicalSTResolutionL;
+uint32_t _encoderPhysicalSTResolution;
+uint32_t _encoderPhysicalMTResolutionH;
+uint32_t _encoderPhysicalMTResolutionL;
+uint32_t _encoderPhysicalMTResolution;
+uint32_t _encoderScalingEnabled;
+uint32_t _encoderSTResolutionH;
+uint32_t _encoderSTResolutionL;
+uint32_t _encoderSTResolution;
+uint32_t _encoderTotResolutionH;
+uint32_t _encoderTotResolutionL;
+uint32_t _encoderTotResolution;
+uint32_t _encoderPresetH;
+uint32_t _encoderPresetL;
+uint32_t _encoderPreset;
+uint32_t _encoderOffsetH;
+uint32_t _encoderOffsetL;
+uint32_t _encoderOffset;
+uint32_t _encoderCountDirection;
+uint32_t _encoderSpeedMode;
+uint32_t _encoderSpeedFilter;
+uint32_t _encoderLimitSwitchEnable;
+uint32_t _encoderLowLimitSwitchH;
+uint32_t _encoderLowLimitSwitchL;
+uint32_t _encoderLowLimitSwitch;
+uint32_t _encoderHighLimitSwitchH;
+uint32_t _encoderHighLimitSwitchL;
+uint32_t _encoderHighLimitSwitch;
+uint32_t _encoderDelay;
+uint32_t _encoderErrorReg;
+uint32_t _encoderDeviceResetStore;
+uint32_t _encoderParameters;
+uint32_t _encoderAutoStore;
+uint32_t _encoderRestoreAllParameters;
+uint32_t _encoderRestoreAplicationParameters;
+uint32_t _encoderAutoTest;
+uint32_t _encoderSoftwareVersion;
+uint32_t _encoderSerialNumberH;
+uint32_t _encoderSerialNumberL;
+uint32_t _encoderSerialNumber;
+uint32_t _encoderLifeCycleCounterH;
+uint32_t _encoderLifeCycleCounterL;
+uint32_t _encoderLifeCycleCounter;
+uint32_t _encoderRollCounter;
+uint32_t _encoderBaudrate;
+uint32_t _encoderNumberData;
+uint32_t _encoderParity;
+uint32_t _encoderStopbits;
+uint32_t _encoderCommUpdate;
+uint32_t _encoderNodeAddress;
+uint32_t _encoderNodeUpdate;
+uint32_t _encoderAutoBaudEnable;
+uint32_t _encoderAutoBaudTimeout;
+uint32_t _encoderRestoreBusParameters;
+uint32_t _encoderTermination;
+uint32_t _encoderTermUpdate;
+
+
 
 /*!
 * Initialisation of encoder. Set parameters of connections and connect to encoder

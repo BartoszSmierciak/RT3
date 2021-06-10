@@ -1,16 +1,21 @@
 CC = gcc
+CFLAGS  = -g -Wall -lmodbus `pkg-config --cflags --libs libmodbus`
+
+default: all
+
+all: main.o encoder.o encoderRegisters.o 
+	$(CC) $(CFLAGS) main.o encoder.o encoderRegisters.o -o main
  
- all: main.o encoder.o encoderRegisters.o 
-	 $(CC) main.o encoder.o encoderRegisters.o -o main
+main.o: main.c encoder.h encoderRegisters.h
+	$(CC) $(CFLAGS) -c main.c
  
- main.o: main.c encoder.h encoderRegisters.h
-	$(CC) main.c -c -o main.o 
+encoder.o: encoder.c encoder.h encoderRegisters.h encoderPrivate.h
+	$(CC) $(CFLAGS) -c encoder.c
  
- encoder.o: encoder.c encoder.h encoderPrivate.h encoderRegisters.h
-	$(CC) encoder.c -c -o encoder.o
- 
- encoderRegisters.o: encoderRegisters.c encoderRegisters.h
-	$(CC) encoderRegisters.c -c -o encoderRegisters.o
- 
+encoderRegisters.o: encoderRegisters.c encoderRegisters.h
+	$(CC) $(CFLAGS) -c encoderRegisters.c
+	
+clean: 
+	$(RM) all *.o *~
  
 	
