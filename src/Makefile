@@ -1,4 +1,4 @@
-CC = gcc
+CC = gcc-6
 CFLAGS  = -g -Wall -lmodbus `pkg-config --cflags --libs libmodbus`
 
 default: all
