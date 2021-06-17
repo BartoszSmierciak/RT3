@@ -6,57 +6,88 @@
 * @brief A brief description of encoder.h.
 */
 
-//"/dev/ttyS0", 9600, 'N', 8, 1
 #include <stdio.h>
 #include <stdlib.h>
 #include <modbus/modbus.h>
 #include "encoder.h"
 #include "encoderRegisters.h"
+#include <errno.h>
+#include <unistd.h>
 
+#include <sys/time.h>
 
+modbus_t *mb;
 
 int EncoderInit(const char *device, int baud, char parity, int data_bit, int stop_bit)
 {
-    //Create a new RTU context with proper serial parameters (in this example,
-    //device name /dev/ttyS0, baud rate 9600, no parity bit, 8 data bits, 1 stop bit)
-    modbus_t *ctx = modbus_new_rtu(device, baud, parity, data_bit, stop_bit);
-    if (!ctx)
-    {
-        fprintf(stderr, "Failed to create the context\n");
-        exit(1);
-    }
 
-    if (modbus_connect(ctx) == -1)
+    uint32_t tv_sec  = 0;          
+    uint32_t tv_usec = 0;
+    
+    uint32_t resTimeSec = 0;
+    uint32_t resTimeuSec = 40000;
+    
+    printf("\n");
+    printf("Trying to connect...\n");
+    mb = modbus_new_rtu(device, baud, parity, data_bit, stop_bit);
+    if (modbus_connect(mb) == -1)
     {
-        fprintf(stderr, "Unable to connect\n");
-        modbus_free(ctx);
-        exit(1);
+        fprintf(stderr, "Connection failed: %s\n", modbus_strerror(errno));
+        modbus_close(mb);
+        modbus_free(mb);
+        return -1;
     }
+    if (NULL == mb)
+    {
+        printf("Unable to create modbus context\n");
+        modbus_close(mb);
+        modbus_free(mb);
+        return -1;
+    }
+    printf("Created modbus context\n");
+    /* Get response timeout */
+    modbus_get_response_timeout(mb, &tv_sec, &tv_usec); 
+    printf("Default response timeout: %d sec %d usec \n", tv_sec, tv_usec );
+
+    /* Set response timeout */
+    modbus_set_response_timeout(mb, resTimeSec, resTimeuSec); 
+    modbus_get_response_timeout(mb, &tv_sec, &tv_usec); 
+    printf("Set response timeout:     %d sec %d usec \n", tv_sec, tv_usec );
     return 0;
+    
 }
 
 uint16_t EncoderReadModbus(int slaveAddress, int regAddress)
 {
+	//return 0;
+
     //Set the Modbus address of the remote slave
-    modbus_set_slave(ctx, slaveAddress);
+    int rc = modbus_set_slave(mb, slaveAddress);
+    if (rc == -1) 
+    {
+        fprintf(stderr, "Invalid slave ID.\n");
+        modbus_free(mb);
+        return -1;
+    }
     
 	// will store read registers values
     uint16_t reg;
 
-    int num = modbus_read_registers(ctx, regAddress, 1, &reg);
+    int num = modbus_read_registers(mb, regAddress, 1, &reg);
     if (num != 1)
     {
-        fprintf(stderr, "Failed to read modbus\n");
+        fprintf(stderr, "Failed to read modbus. Num: %d\n", num);
     }
     return reg;
 }
 
 int EncoderWriteModbus(int slaveAddress, int regAddress, uint16_t value)
 {
-	modbus_set_slave(ctx, slaveAddress);
-    int modbusAnswear = modbus_write_register(ctx, regAddress, value);
+
+	modbus_set_slave(mb, slaveAddress);
+    int modbusAnswear = modbus_write_register(mb, regAddress, value);
     if (modbusAnswear != 1)
-    {
+   {
         printf("ERROR modbus_write_register (%d)\n", modbusAnswear);
         printf("Address = %d, value = %d (0x%X)\n", regAddress, value, value);
     }
@@ -65,15 +96,163 @@ int EncoderWriteModbus(int slaveAddress, int regAddress, uint16_t value)
 
 void EncoderClose()
 {
-    modbus_close(ctx);
-    modbus_free(ctx);
+    modbus_close(mb);
+    modbus_free(mb);
 }
+void EncoderPrintRegisters(int slaveAddress)
+{
+	printf("Position: %u steps\n",EncoderGetPosition(slaveAddress));
+	
+	printf("Actual Reverse State: ");
+	switch(EncoderGetActualReverseState(slaveAddress))
+	{
+		case 0: printf("CW\n"); break;
+		case 1: printf("CCW\n"); break;
+		default: printf("error\n");
+	}
 
+	printf("Term Reset State: ");
+	switch(EncoderGetTermResetState(slaveAddress))
+	{
+		case 0: printf("off\n"); break;
+		case 1: printf("on\n"); break;
+		default: printf("error\n");
+	}
+	
+	printf("Speed: %u\n", EncoderGetSpeed(slaveAddress));
+	
+	printf("Limit Switch State: %u\n", EncoderGetLimitSwitchState(slaveAddress));
+	
+	printf("Physical Single Turn Resolution: %u\n", EncoderGetPhysicalSTResolution(slaveAddress));
+	
+	printf("Physical Multi Turn Resolution: %u\n", EncoderGetPhysicalMTResolution(slaveAddress));
+	
+	printf("Scaling Enabled: ");
+	switch(EncoderGetScalingEnabled(slaveAddress))
+	{
+		case 0: printf("off\n"); break;
+		case 1: printf("on\n"); break;
+		default: printf("error\n");
+	}
+
+	printf("Single Turn Resolution: %u\n", EncoderGetSTResolution(slaveAddress));
+	
+	printf("Total resolution: %u\n",EncoderGetTotResolution(slaveAddress));
+
+	printf("Preset: %u\n", EncoderGetPreset(slaveAddress));
+	
+	printf("Offset: %u\n", EncoderGetOffset(slaveAddress));
+	
+	printf("Node address: %u\n",EncoderGetNodeAddress(slaveAddress));
+	
+	printf("SerialNr: %u\n", EncoderGetSerialNumber(slaveAddress));
+	
+	printf("Count direction: %u\n",EncoderGetCountDirection(slaveAddress));
+
+    printf("Speed mode: ");
+    switch(EncoderGetSpeedMode(slaveAddress))
+    {
+		case 0: printf("disable\n"); break;
+		case 1: printf("rmp\n"); break;
+		case 2: printf("degree/sec\n"); break;
+		case 3: printf("steps/s\n"); break;
+		case 4: printf("rad/sec\n"); break;
+		case 5: printf("Hz\n"); break;
+		default: printf("error\n");
+	}
+		
+    printf("Speed filter. Moving average: %u\n",EncoderGetSpeedFilter(slaveAddress));
+    
+	printf("Limit Switch Enable: %u\n",EncoderGetLimitSwitchEnable(slaveAddress));
+	
+	printf("Low Limit Switch: %u\n",EncoderGetLowLimitSwitch(slaveAddress));
+	
+	printf("High Limit Switch: %u\n",EncoderGetHighLimitSwitch(slaveAddress));
+	
+	printf("Delay: %u\n",EncoderGetDelay(slaveAddress));
+	
+	printf("Error Register: %u\n",EncoderGetErrorReg(slaveAddress));
+	
+	printf("Device Reset Store: %u\n",EncoderGetDeviceResetStore(slaveAddress));
+	
+	printf("Parameters: %u\n",EncoderGetParameters(slaveAddress));
+	
+	printf("Auto Store: %u\n",EncoderGetAutoStore(slaveAddress));
+	
+	printf("Restore All Parameters: %u\n",EncoderGetRestoreAllParameters(slaveAddress));
+	
+	printf("Restore Aplication Parameters: %u\n",EncoderGetRestoreAplicationParameters(slaveAddress));
+	
+	printf("Auto Test; %u\n",EncoderGetAutoTest(slaveAddress));
+	
+	printf("Software Version: %u\n",EncoderGetSoftwareVersion(slaveAddress));
+	
+	printf("Serial Number: %u\n",EncoderGetSerialNumber(slaveAddress));
+	
+	printf("Life Cycle Counter %u\n",EncoderGetLifeCycleCounter(slaveAddress));
+ 
+	printf("Roll Counter: %u\n",EncoderGetRollCounter(slaveAddress));
+	
+	printf("Baudrate: ");
+	switch(EncoderGetBaudrate(slaveAddress))
+	{
+		case 0: printf("1200"); break;
+		case 1: printf("2400"); break;
+		case 2: printf("4800"); break;
+		case 3: printf("9600"); break;
+		case 4: printf("14400"); break;
+		case 5: printf("19200"); break;
+		case 6: printf("38400"); break;
+		case 7: printf("56000"); break;
+		case 8: printf("57600"); break;
+		case 9: printf("115200"); break;
+		case 10: printf("128000"); break;
+		case 11: printf("256000"); break;
+		default: printf("error read");
+	}
+	printf(" bps\n");
+	
+	printf("Number data bits: ");
+	switch(EncoderGetNumberData(slaveAddress))
+	{
+		case 0: printf("6\n"); break;
+		case 1: printf("7\n"); break;
+		case 2: printf("8\n"); break;
+		default: printf("error\n");
+	}
+	printf("Parity: ");
+	switch(EncoderParity(slaveAddress))
+	{
+		case 0: printf("No\n"); break;
+		case 1: printf("Odd\n"); break;
+		case 2: printf("Even\n"); break;
+		default: printf("error\n");
+	}
+	
+	printf("Stop bits: %u\n",EncoderGetStopbits(slaveAddress));
+    
+	printf("Comm Update Execute: %u\n",EncoderGetCommUpdate(slaveAddress));
+
+	printf("Node address: %u\n",EncoderGetNodeAddress(slaveAddress));
+
+	printf("Node Upadate: %u\n",EncoderGetNodeUpdate(slaveAddress));
+    
+	printf("Auto Baud Enable: %u\n",EncoderGetAutoBaudEnable(slaveAddress));
+    
+	printf("Auto Baud Timeout: %u\n",EncoderGetAutoBaudTimeout(slaveAddress));
+    
+	printf("Restore Bus Parameters: %u\n",EncoderGetRestoreBusParameters(slaveAddress));
+  
+	printf("Termination: %u\n",EncoderGetTermination(slaveAddress));
+    
+	printf("Term update: %u\n",EncoderGetTermUpdate(slaveAddress));
+	
+}
 uint32_t EncoderGetPosition(int slaveAddress)
 {
     _encoderPositionH = EncoderReadModbus(slaveAddress, encoderRegPositionH);
     _encoderPositionL = EncoderReadModbus(slaveAddress, encoderRegPositionL);
-    _encoderPosition = (_encoderPositionH << 16) | _encoderPositionL;
+    _encoderPosition = (_encoderPositionH ) << 16 | _encoderPositionL;
     return _encoderPosition;
 }
 
@@ -93,7 +272,7 @@ uint32_t EncoderGetSpeed(int slaveAddress)
 {
     _encoderSpeedH = EncoderReadModbus(slaveAddress, encoderRegSpeedH);
     _encoderSpeedL = EncoderReadModbus(slaveAddress, encoderRegSpeedL);
-    _encoderSpeed = _encoderSpeedH | _encoderSpeedL;
+    _encoderSpeed = (_encoderSpeedH) << 16 | _encoderSpeedL;
     return _encoderSpeed;
 }
 
@@ -107,7 +286,7 @@ uint32_t EncoderGetPhysicalSTResolution(int slaveAddress)
 {
     _encoderPhysicalSTResolutionH = EncoderReadModbus(slaveAddress, encoderRegPhysicalSTResolutionH);
     _encoderPhysicalSTResolutionL = EncoderReadModbus(slaveAddress, encoderRegPhysicalSTResolutionL);
-    _encoderPhysicalSTResolution = _encoderPhysicalSTResolutionH | _encoderPhysicalSTResolutionL;
+    _encoderPhysicalSTResolution = (_encoderPhysicalSTResolutionH) << 16 | _encoderPhysicalSTResolutionL;
     return _encoderPhysicalSTResolution;
 }
 
@@ -115,7 +294,7 @@ uint32_t EncoderGetPhysicalMTResolution(int slaveAddress)
 {
     _encoderPhysicalMTResolutionH = EncoderReadModbus(slaveAddress, encoderRegPhysicalMTResolutionH);
     _encoderPhysicalMTResolutionL = EncoderReadModbus(slaveAddress, encoderRegPhysicalMTResolutionL);
-    _encoderPhysicalMTResolution = _encoderPhysicalMTResolutionH | _encoderPhysicalMTResolutionL;
+    _encoderPhysicalMTResolution = (_encoderPhysicalMTResolutionH) << 16 | _encoderPhysicalMTResolutionL;
     return _encoderPhysicalMTResolution;
 }
 
@@ -135,7 +314,7 @@ uint32_t EncoderGetSTResolution(int slaveAddress)
 {
     _encoderSTResolutionH = EncoderReadModbus(slaveAddress, encoderRegSTResolutionH);
     _encoderSTResolutionL = EncoderReadModbus(slaveAddress, encoderRegSTResolutionL);
-    _encoderSTResolution = _encoderSTResolutionH | _encoderSTResolutionL;
+    _encoderSTResolution = (_encoderSTResolutionH) << 16 | _encoderSTResolutionL;
     return _encoderSTResolution;
 }
 
@@ -143,7 +322,7 @@ uint32_t EncoderGetTotResolution(int slaveAddress)
 {
     _encoderTotResolutionH = EncoderReadModbus(slaveAddress, encoderRegTotResolutionH);
     _encoderTotResolutionL = EncoderReadModbus(slaveAddress, encoderRegTotResolutionL);
-    _encoderTotResolution = _encoderTotResolutionH | _encoderTotResolutionL;
+    _encoderTotResolution = (_encoderTotResolutionH) << 16 | _encoderTotResolutionL;
     return _encoderTotResolution;
 }
 
@@ -158,7 +337,7 @@ uint32_t EncoderGetPreset(int slaveAddress)
 {
     _encoderPresetH = EncoderReadModbus(slaveAddress, encoderRegPresetH);
     _encoderPresetL = EncoderReadModbus(slaveAddress, encoderRegPresetL);
-    _encoderPreset = _encoderPresetH | _encoderPresetL;
+    _encoderPreset = (_encoderPresetH) << 16 | _encoderPresetL;
     return _encoderPreset;
 }
 
@@ -174,7 +353,7 @@ uint32_t EncoderGetOffset(int slaveAddress)
 {
     _encoderOffsetH = EncoderReadModbus(slaveAddress, encoderRegOffsetH);
     _encoderOffsetL = EncoderReadModbus(slaveAddress, encoderRegOffsetL);
-    _encoderOffset = _encoderOffsetH | _encoderOffsetL;
+    _encoderOffset = (_encoderOffsetH) << 16 | _encoderOffsetL;
     return _encoderOffset;
 }
 
@@ -230,7 +409,7 @@ uint32_t EncoderGetLowLimitSwitch(int slaveAddress)
 {
     _encoderLowLimitSwitchH = EncoderReadModbus(slaveAddress, encoderRegLowLimitSwitchH);
     _encoderLowLimitSwitchL = EncoderReadModbus(slaveAddress, encoderRegLowLimitSwitchL);
-    _encoderLowLimitSwitch = _encoderLowLimitSwitchH | _encoderLowLimitSwitchL;
+    _encoderLowLimitSwitch = (_encoderLowLimitSwitchH) << 16 | _encoderLowLimitSwitchL;
     return _encoderLowLimitSwitch;
 }
 
@@ -245,7 +424,7 @@ uint32_t EncoderGetHighLimitSwitch(int slaveAddress)
 {
     _encoderHighLimitSwitchH = EncoderReadModbus(slaveAddress, encoderRegHighLimitSwitchH);
     _encoderHighLimitSwitchL = EncoderReadModbus(slaveAddress, encoderRegHighLimitSwitchL);
-    _encoderHighLimitSwitch = _encoderHighLimitSwitchH | _encoderHighLimitSwitchL;
+    _encoderHighLimitSwitch = (_encoderHighLimitSwitchH) << 16 | _encoderHighLimitSwitchL;
     return _encoderHighLimitSwitch;
 }
 
@@ -362,7 +541,7 @@ uint32_t EncoderGetSerialNumber(int slaveAddress)
 {
     _encoderSerialNumberH = EncoderReadModbus(slaveAddress, encoderRegSerialNumberH);
     _encoderSerialNumberL = EncoderReadModbus(slaveAddress, encoderRegSerialNumberL);
-    _encoderSerialNumber = _encoderSerialNumberH | _encoderSerialNumberL;
+    _encoderSerialNumber = (_encoderSerialNumberH) << 16 | _encoderSerialNumberL;
     return _encoderSerialNumber;
 }
     
@@ -370,7 +549,7 @@ uint32_t EncoderGetLifeCycleCounter(int slaveAddress)
 {
     _encoderLifeCycleCounterH = EncoderReadModbus(slaveAddress, encoderRegLifeCycleCounterH);
     _encoderLifeCycleCounterL = EncoderReadModbus(slaveAddress, encoderRegLifeCycleCounterL);
-    _encoderLifeCycleCounter = _encoderLifeCycleCounterH | _encoderLifeCycleCounterL;
+    _encoderLifeCycleCounter = (_encoderLifeCycleCounterH) << 16 | _encoderLifeCycleCounterL;
     return _encoderLifeCycleCounter;
 }
     

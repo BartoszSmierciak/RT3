@@ -1,16 +1,17 @@
 #include <stdio.h>
 #include <modbus/modbus.h>
 #include "encoder.h"
-//#include "encoderRegisters.h"
+#include <time.h>
 
+#define ENCODER1 127
 
+extern modbus_t *mb;
 
 int main()
 {
-	EncoderInit("/dev/ttyUSB0", 19200 , 'N', 8, 1);
-	printf("Azymut [imp]: %d\n", EncoderGetPosition(127));
-	//printf("Elewacja [imp]: %d\n", EncoderGetPosition(126));
 
+	EncoderInit("/dev/ttyUSB0", 19200, 'E', 8, 1);
+	EncoderPrintRegisters(ENCODER1);
 	EncoderClose();
 	return 0;
 }

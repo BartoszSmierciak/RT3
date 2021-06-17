@@ -8,11 +8,7 @@
 #include <modbus/modbus.h>
 #include <stdint.h>
 #include "encoderPrivate.h"
-//#include "encoderRegisters.h"
-
-
-//Modbus contex
-modbus_t *ctx;
+#include <stdbool.h>
 
 uint32_t _encoderPositionH;
 uint32_t _encoderPositionL;
@@ -101,6 +97,8 @@ int EncoderWriteModbus(int slaveAddress, int regAddress, uint16_t value);
 //Close modbus connection
 void EncoderClose();
 
+void EncoderPrintRegisters(int slaveAddress);
+
 /*!
 * Get encoder position.
 * Read two 32 bit high (MSB 0xFF00) and low (LSB 0x00FF) 
@@ -123,7 +121,7 @@ uint32_t EncoderGetActualReverseState(int slaveAddress);
 //8 bit MSB 0xF000
 //Termination on = 1, off = 0
 //Default is 1
-uint32_t EncoderGetTermRestState();
+uint32_t EncoderGetTermResetState(int slaveAddress);
 
 //2*32 bit MSB 0xFF00 LSB 0x00FF
 uint32_t EncoderGetSpeed(int slaveAddress);
@@ -164,11 +162,11 @@ uint32_t EncoderGetTotResolution(int slaveAddress);
 
 void EncoderSetTotResolution(int slaveAddress, uint32_t totResolution);
 
-uint32_t EncoderGetPreEncoderSet(int slaveAddress);
+uint32_t EncoderGetPreset(int slaveAddress);
 
 void EncoderSetPreEncoderSet(int slaveAddress, uint32_t preEncoderSet);
 
-uint32_t EncoderGetOffEncoderSet(int slaveAddress);
+uint32_t EncoderGetOffset(int slaveAddress);
 
 uint32_t EncoderGetCountDirection(int slaveAddress);
 
@@ -202,7 +200,7 @@ uint32_t EncoderGetErrorReg(int slaveAddress);
 
 void EncoderSetErrorReg(int slaveAddress, uint32_t errorReg);
 
-uint32_t EncoderGetDeviceReEncoderSetStore(int slaveAddress);
+uint32_t EncoderGetDeviceResetStore(int slaveAddress);
 
 void EncoderSetDeviceReEncoderSetStore(int slaveAddress, uint32_t deviceReEncoderSetStore);
 
