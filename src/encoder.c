@@ -143,10 +143,6 @@ void EncoderPrintRegisters(int slaveAddress)
 	
 	printf("Offset: %u\n", EncoderGetOffset(slaveAddress));
 	
-	printf("Node address: %u\n",EncoderGetNodeAddress(slaveAddress));
-	
-	printf("SerialNr: %u\n", EncoderGetSerialNumber(slaveAddress));
-	
 	printf("Count direction: %u\n",EncoderGetCountDirection(slaveAddress));
 
     printf("Speed mode: ");
@@ -181,9 +177,9 @@ void EncoderPrintRegisters(int slaveAddress)
 	
 	printf("Restore All Parameters: %u\n",EncoderGetRestoreAllParameters(slaveAddress));
 	
-	printf("Restore Aplication Parameters: %u\n",EncoderGetRestoreAplicationParameters(slaveAddress));
+	printf("Restore Application Parameters: %u\n",EncoderGetRestoreAplicationParameters(slaveAddress));
 	
-	printf("Auto Test; %u\n",EncoderGetAutoTest(slaveAddress));
+	printf("Auto Test: %u\n",EncoderGetAutoTest(slaveAddress));
 	
 	printf("Software Version: %u\n",EncoderGetSoftwareVersion(slaveAddress));
 	
@@ -233,9 +229,9 @@ void EncoderPrintRegisters(int slaveAddress)
     
 	printf("Comm Update Execute: %u\n",EncoderGetCommUpdate(slaveAddress));
 
-	printf("Node address: %u\n",EncoderGetNodeAddress(slaveAddress));
+	printf("Node Address: %u\n",EncoderGetNodeAddress(slaveAddress));
 
-	printf("Node Upadate: %u\n",EncoderGetNodeUpdate(slaveAddress));
+	printf("Node Update: %u\n",EncoderGetNodeUpdate(slaveAddress));
     
 	printf("Auto Baud Enable: %u\n",EncoderGetAutoBaudEnable(slaveAddress));
     
