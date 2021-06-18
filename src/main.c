@@ -1,11 +1,10 @@
 #include <stdio.h>
-#include <modbus/modbus.h>
+//#include <modbus/modbus.h>
 #include "encoder.h"
-#include <time.h>
 
 #define ENCODER1 127
 
-extern modbus_t *mb;
+//extern modbus_t *ctx;
 
 int main()
 {

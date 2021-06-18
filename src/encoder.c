@@ -16,7 +16,7 @@
 
 #include <sys/time.h>
 
-modbus_t *mb;
+modbus_t *ctx;
 
 int EncoderInit(const char *device, int baud, char parity, int data_bit, int stop_bit)
 {
@@ -29,29 +29,29 @@ int EncoderInit(const char *device, int baud, char parity, int data_bit, int sto
     
     printf("\n");
     printf("Trying to connect...\n");
-    mb = modbus_new_rtu(device, baud, parity, data_bit, stop_bit);
-    if (modbus_connect(mb) == -1)
+    ctx = modbus_new_rtu(device, baud, parity, data_bit, stop_bit);
+    if (modbus_connect(ctx) == -1)
     {
         fprintf(stderr, "Connection failed: %s\n", modbus_strerror(errno));
-        modbus_close(mb);
-        modbus_free(mb);
+        modbus_close(ctx);
+        modbus_free(ctx);
         return -1;
     }
-    if (NULL == mb)
+    if (NULL == ctx)
     {
         printf("Unable to create modbus context\n");
-        modbus_close(mb);
-        modbus_free(mb);
+        modbus_close(ctx);
+        modbus_free(ctx);
         return -1;
     }
     printf("Created modbus context\n");
     /* Get response timeout */
-    modbus_get_response_timeout(mb, &tv_sec, &tv_usec); 
+    modbus_get_response_timeout(ctx, &tv_sec, &tv_usec); 
     printf("Default response timeout: %d sec %d usec \n", tv_sec, tv_usec );
 
     /* Set response timeout */
-    modbus_set_response_timeout(mb, resTimeSec, resTimeuSec); 
-    modbus_get_response_timeout(mb, &tv_sec, &tv_usec); 
+    modbus_set_response_timeout(ctx, resTimeSec, resTimeuSec); 
+    modbus_get_response_timeout(ctx, &tv_sec, &tv_usec); 
     printf("Set response timeout:     %d sec %d usec \n", tv_sec, tv_usec );
     return 0;
     
@@ -59,21 +59,19 @@ int EncoderInit(const char *device, int baud, char parity, int data_bit, int sto
 
 uint16_t EncoderReadModbus(int slaveAddress, int regAddress)
 {
-	//return 0;
-
     //Set the Modbus address of the remote slave
-    int rc = modbus_set_slave(mb, slaveAddress);
+    int rc = modbus_set_slave(ctx, slaveAddress);
     if (rc == -1) 
     {
         fprintf(stderr, "Invalid slave ID.\n");
-        modbus_free(mb);
+        modbus_free(ctx);
         return -1;
     }
     
-	// will store read registers values
+	// will store read register value
     uint16_t reg;
 
-    int num = modbus_read_registers(mb, regAddress, 1, &reg);
+    int num = modbus_read_registers(ctx, regAddress, 1, &reg);
     if (num != 1)
     {
         fprintf(stderr, "Failed to read modbus. Num: %d\n", num);
@@ -84,8 +82,8 @@ uint16_t EncoderReadModbus(int slaveAddress, int regAddress)
 int EncoderWriteModbus(int slaveAddress, int regAddress, uint16_t value)
 {
 
-	modbus_set_slave(mb, slaveAddress);
-    int modbusAnswear = modbus_write_register(mb, regAddress, value);
+	modbus_set_slave(ctx, slaveAddress);
+    int modbusAnswear = modbus_write_register(ctx, regAddress, value);
     if (modbusAnswear != 1)
    {
         printf("ERROR modbus_write_register (%d)\n", modbusAnswear);
@@ -96,8 +94,8 @@ int EncoderWriteModbus(int slaveAddress, int regAddress, uint16_t value)
 
 void EncoderClose()
 {
-    modbus_close(mb);
-    modbus_free(mb);
+    modbus_close(ctx);
+    modbus_free(ctx);
 }
 void EncoderPrintRegisters(int slaveAddress)
 {
