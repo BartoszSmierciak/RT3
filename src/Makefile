@@ -1,4 +1,4 @@
-CC = gcc-6
+CC = gcc
 
 CFLAGSS  = -g -Wall -I/opt/libmodbus/include/ -L/opt/libmodbus/lib/
 
