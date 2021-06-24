@@ -1,0 +1,398 @@
+make all -f "/home/bart/Programowanie/enkodery/RT3/src/Makefile" --print-data-base --no-builtin-variables --no-builtin-rules --question
+# GNU Make 4.1
+# Built for x86_64-pc-linux-gnu
+# Copyright (C) 1988-2014 Free Software Foundation, Inc.
+# License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+# This is free software: you are free to change and redistribute it.
+# There is NO WARRANTY, to the extent permitted by law.
+
+# Make data base, printed on Thu Jun 24 19:48:25 2021
+
+# Variables
+
+ 
+# automatic
+<D = $(patsubst %/,%,$(dir $<))
+# automatic
+?F = $(notdir $?)
+# environment
+DESKTOP_SESSION = /usr/share/xsessions/plasma
+# default
+.SHELLFLAGS := -c
+# environment
+XDG_SESSION_CLASS = user
+# environment
+XDG_SESSION_TYPE = x11
+# environment
+VSCODE_LOG_NATIVE = false
+# automatic
+?D = $(patsubst %/,%,$(dir $?))
+# environment
+GTK_RC_FILES = /etc/gtk/gtkrc:/home/bart/.gtkrc:/home/bart/.config/gtkrc
+# automatic
+@D = $(patsubst %/,%,$(dir $@))
+# environment
+XAUTHORITY = /tmp/xauth-1000-_0
+# automatic
+@F = $(notdir $@)
+# environment
+XMODIFIERS = @im=ibus
+# makefile
+CURDIR := /home/bart/Programowanie/enkodery/RT3/src
+# makefile
+SHELL = /bin/sh
+# environment
+VSCODE_NLS_CONFIG = {"locale":"pl","availableLanguages":{},"_languagePackSupport":true}
+# environment
+_ = /usr/share/code/code
+# environment
+QT_AUTO_SCREEN_SCALE_FACTOR = 0
+# environment
+QSYS_ROOTDIR = /home/bart/intelFPGA_lite/18.1/quartus/sopc_builder/bin
+# environment
+KDE_MULTIHEAD = false
+# makefile (from '/home/bart/Programowanie/enkodery/RT3/src/Makefile', line 1)
+MAKEFILE_LIST :=  /home/bart/Programowanie/enkodery/RT3/src/Makefile
+# environment
+VSCODE_NODE_CACHED_DATA_DIR = /home/bart/.config/Code/CachedData/507ce72a4466fbb27b715c3722558bb15afa9f48
+# 'override' directive
+GNUMAKEFLAGS := 
+# environment
+XDG_DATA_DIRS = /usr/share:/usr/share:/usr/local/share
+# environment
+DBUS_SESSION_BUS_ADDRESS = unix:path=/run/user/1000/bus
+# environment
+VSCODE_VERBOSE_LOGGING = true
+# environment
+CLUTTER_IM_MODULE = xim
+# environment
+VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-c3d5efb9-c7ba-44bc-8db5-95baf9fdb621.sock
+# environment
+VSCODE_CWD = /home/bart
+# environment
+PAM_KWALLET5_LOGIN = /tmp/kwallet5_bart.socket
+# environment
+XDG_SESSION_PATH = /org/freedesktop/DisplayManager/Session1
+# default
+MAKE_HOST := x86_64-pc-linux-gnu
+# environment
+PATH = /home/bart/tizen-studio/tools/ide/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games:/opt/intelFPGA_lite/18.1/quartus/bin:/home/bart/tizen-studio/platforms/tizen-5.0/common/tidl
+# environment
+GPG_AGENT_INFO = /run/user/1000/gnupg/S.gpg-agent:0:1
+# environment
+XCURSOR_THEME = breeze_cursors
+# environment
+SESSION_MANAGER = local/bart-i5:@/tmp/.ICE-unix/2436,unix/bart-i5:/tmp/.ICE-unix/2436
+# environment
+XDG_RUNTIME_DIR = /run/user/1000
+# environment
+VSCODE_LOG_STACK = false
+# environment
+VSCODE_CRASH_REPORTER_START_OPTIONS = {"companyName":"Microsoft","productName":"VSCode","submitURL":"","uploadToServer":false}
+# environment
+GTK2_RC_FILES = /etc/gtk-2.0/gtkrc:/home/bart/.gtkrc-2.0:/home/bart/.config/gtkrc-2.0
+# default
+.FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell archives jobserver output-sync check-symlink load
+# environment
+LS_COLORS = 
+# environment
+XDG_SESSION_DESKTOP = KDE
+# environment
+SSH_AUTH_SOCK = /tmp/ssh-mLd196PlKoFD/agent.2239
+# automatic
+%F = $(notdir $%)
+# environment
+DISPLAY = :0
+# environment
+GTK_IM_MODULE = xim
+# environment
+VSCODE_PIPE_LOGGING = true
+# environment
+PWD = /home/bart/Programowanie/enkodery/RT3/src
+# environment
+KDE_SESSION_VERSION = 5
+# environment
+XDG_SEAT = seat0
+# environment
+SSH_AGENT_PID = 2305
+# environment
+ORIGINAL_XDG_CURRENT_DESKTOP = KDE
+# environment
+GTK_MODULES = gail:atk-bridge
+# environment
+VSCODE_AMD_ENTRYPOINT = vs/workbench/services/extensions/node/extensionHostProcess
+# environment
+HOME = /home/bart
+# environment
+LOGNAME = bart
+# environment
+QT_LINUX_ACCESSIBILITY_ALWAYS_ON = 1
+# environment
+APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = true
+# environment
+KDE_FULL_SESSION = true
+# environment
+VSCODE_HANDLES_UNCAUGHT_ERRORS = true
+# default
+MAKE_VERSION := 4.1
+# automatic
+^D = $(patsubst %/,%,$(dir $^))
+# environment
+XDG_VTNR = 7
+# environment
+MAKELEVEL := 0
+# default
+MAKE = $(MAKE_COMMAND)
+# default
+MAKECMDGOALS := all
+# environment
+QT_IM_MODULE = ibus
+# environment
+SHLVL = 1
+# makefile (from '/home/bart/Programowanie/enkodery/RT3/src/Makefile', line 1)
+CC = gcc-6
+# environment
+XDG_SESSION_ID = 3
+# environment
+USER = bart
+# makefile
+.DEFAULT_GOAL := default
+# environment
+XDG_CURRENT_DESKTOP = KDE
+# automatic
+%D = $(patsubst %/,%,$(dir $%))
+# default
+MAKE_COMMAND := make
+# makefile (from '/home/bart/Programowanie/enkodery/RT3/src/Makefile', line 5)
+CFLAGSE = -lncurses
+# default
+.VARIABLES := 
+# automatic
+*F = $(notdir $*)
+# environment
+XDG_SEAT_PATH = /org/freedesktop/DisplayManager/Seat0
+# environment
+VSCODE_IPC_HOOK = /run/user/1000/vscode-44e5c6c7-1.57.1-main.sock
+# makefile
+MAKEFLAGS = pqrR
+# environment
+MFLAGS = -pqrR
+# automatic
+*D = $(patsubst %/,%,$(dir $*))
+# environment
+BREAKPAD_DUMP_LOCATION = /home/bart/.config/Code/exthost Crash Reports
+# automatic
++D = $(patsubst %/,%,$(dir $+))
+# makefile (from '/home/bart/Programowanie/enkodery/RT3/src/Makefile', line 3)
+CFLAGSS = -g -Wall -lmodbus `pkg-config --cflags --libs libmodbus`
+# environment
+GDK_BACKEND = x11
+# automatic
++F = $(notdir $+)
+# environment
+QT_ACCESSIBILITY = 1
+# default
+MAKEFILES := 
+# automatic
+<F = $(notdir $<)
+# environment
+ELECTRON_RUN_AS_NODE = 1
+# environment
+LC_ALL = C
+# environment
+QT4_IM_MODULE = xim
+# automatic
+^F = $(notdir $^)
+# default
+SUFFIXES := 
+# environment
+GS_LIB = /home/bart/.fonts
+# environment
+CHROME_DESKTOP = code-url-handler.desktop
+# default
+.INCLUDE_DIRS = /usr/include /usr/local/include /usr/include
+# default
+.RECIPEPREFIX := 
+# environment
+LANG = C
+# environment
+VSCODE_PID = 5213
+# environment
+KDE_SESSION_UID = 1000
+# variable set hash-table stats:
+# Load=104/1024=10%, Rehash=0, Collisions=8/137=6%
+
+# Pattern-specific Variable Values
+
+# No pattern-specific variable values.
+
+# Directories
+
+
+# No files, no impossibilities in 0 directories.
+
+# Implicit Rules
+
+# No implicit rules.
+
+# Files
+
+# Not a target:
+encoderPrivate.h:
+#  Implicit rule search has been done.
+#  Last modified 2021-06-09 04:17:24.675960353
+#  File has been updated.
+#  Successfully updated.
+
+all: main.o main_ncurses.o encoder.o encoderRegisters.o
+#  Command line target.
+#  Implicit rule search has not been done.
+#  Implicit/static pattern stem: ''
+#  File does not exist.
+#  File has been updated.
+#  Needs to be updated (-q is set).
+# automatic
+# @ := all
+# automatic
+# % := 
+# automatic
+# * := 
+# automatic
+# + := main.o main_ncurses.o encoder.o encoderRegisters.o
+# automatic
+# | := 
+# automatic
+# < := main.o
+# automatic
+# ^ := main.o main_ncurses.o encoder.o encoderRegisters.o
+# automatic
+# ? := main.o main_ncurses.o encoder.o encoderRegisters.o
+# variable set hash-table stats:
+# Load=8/32=25%, Rehash=0, Collisions=1/16=6%
+#  recipe to execute (from '/home/bart/Programowanie/enkodery/RT3/src/Makefile', line 10):
+	$(CC) $(CFLAGSS) main.o encoder.o encoderRegisters.o -o main
+	$(CC) $(CFLAGSS) main_ncurses.o encoder.o encoderRegisters.o -o main_ncurses $(CFLAGSE)
+
+# Not a target:
+main.c:
+#  Implicit rule search has been done.
+#  Last modified 2021-06-18 16:43:57.380389649
+#  File has been updated.
+#  Successfully updated.
+
+encoder.o: encoder.c encoder.h encoderRegisters.h encoderPrivate.h
+#  Implicit rule search has not been done.
+#  Last modified 2021-06-21 20:11:35.279020656
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from '/home/bart/Programowanie/enkodery/RT3/src/Makefile', line 20):
+	$(CC) $(CFLAGSS) -c encoder.c
+
+# Not a target:
+encoderRegisters.c:
+#  Implicit rule search has been done.
+#  Last modified 2021-06-18 00:01:19.43951403
+ 
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+.SUFFIXES:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+encoderRegisters.h:
+#  Implicit rule search has been done.
+#  Last modified 2021-06-17 23:39:05.415739689
+#  File has been updated.
+#  Successfully updated.
+
+default: all
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+main_ncurses.o: main_ncurses.c encoder.h encoderRegisters.h
+#  Implicit rule search has not been done.
+#  Last modified 2021-06-21 20:35:42.372207295
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from '/home/bart/Programowanie/enkodery/RT3/src/Makefile', line 17):
+	$(CC) $(CFLAGSS) -c main_ncurses.c $(CFLAGSE)
+
+# Not a target:
+encoder.c:
+#  Implicit rule search has been done.
+#  Last modified 2021-06-18 16:42:22.939494495
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+.DEFAULT:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+clean:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from '/home/bart/Programowanie/enkodery/RT3/src/Makefile', line 26):
+	$(RM) all *.o *~
+
+# Not a target:
+encoder.h:
+#  Implicit rule search has been done.
+#  Last modified 2021-06-18 00:18:16.996780989
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+/home/bart/Programowanie/enkodery/RT3/src/Makefile:
+#  Implicit rule search has been done.
+#  Last modified 2021-06-21 20:11:17.35886698
+#  File has been updated.
+#  Successfully updated.
+
+main.o: main.c encoder.h encoderRegisters.h
+#  Implicit rule search has not been done.
+#  Last modified 2021-06-21 20:11:35.175019763
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from '/home/bart/Programowanie/enkodery/RT3/src/Makefile', line 14):
+	$(CC) $(CFALGSS) -c main.c
+
+# Not a target:
+main_ncurses.c:
+#  Implicit rule search has been done.
+#  Last modified 2021-06-21 20:35:39.568181436
+#  File has been updated.
+#  Successfully updated.
+
+encoderRegisters.o: encoderRegisters.c encoderRegisters.h
+#  Implicit rule search has not been done.
+#  Last modified 2021-06-21 20:11:35.295020794
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from '/home/bart/Programowanie/enkodery/RT3/src/Makefile', line 23):
+	$(CC) $(CFLAGSS) -c encoderRegisters.c
+
+# files hash-table stats:
+# Load=17/1024=2%, Rehash=0, Collisions=0/50=0%
+# VPATH Search Paths
+
+# No 'vpath' search paths.
+
+# No general ('VPATH' variable) search path.
+
+# strcache buffers: 1 (0) / strings = 19 / storage = 268 B / avg = 14 B
+# current buf: size = 8162 B / used = 268 B / count = 19 / avg = 14 B
+
+# strcache performance: lookups = 41 / hit rate = 53%
+# hash-table stats:
+# Load=19/8192=0%, Rehash=0, Collisions=0/41=0%
+# Finished Make data base on Thu Jun 24 19:48:25 2021
+
+ 

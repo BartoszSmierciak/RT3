@@ -1,0 +1,37 @@
+GREEN   = \033[1;32m
+
+WHITE   = \033[0;m
+
+NAME    = main
+
+CC      = gcc-6 -g
+
+RM      = rm -f
+
+SRCS    = encoderRegisters.c encoder.c main.c
+
+OBJS    = $(SRCS:.c=.o)
+
+CFLAGS = -lmodbus -I/usr/include/modbus -L/usr/local/lib -lmodbus 
+CFLAGS += -W -Wall -Wextra 
+
+all: $(NAME)
+
+$(NAME): $(OBJS)
+		@$(CC) $(OBJS) -o $(NAME) $(LDFLAGS)
+		@printf "\n[$(GREEN)OK$(WHITE)] Binary : $(NAME)\n"
+		@echo "-------------------\n"
+        
+%.o :    %.c
+		@$(CC) $(CFLAGS) -c -o $@ $<
+		@printf "[$(GREEN)OK$(WHITE)] $<\n"
+        
+clean:
+		$(RM) $(OBJS)
+
+fclean: clean
+		$(RM) $(NAME)
+
+re: fclean all
+
+.PHONY: all clean fclean re

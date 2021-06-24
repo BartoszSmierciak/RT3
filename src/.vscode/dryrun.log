@@ -1,0 +1,6 @@
+make -f "/home/bart/Programowanie/enkodery/RT3/src/Makefile" --dry-run --keep-going --print-directory
+make: Entering directory '/home/bart/Programowanie/enkodery/RT3/src'
+gcc-6 -g -Wall -lmodbus `pkg-config --cflags --libs libmodbus` main.o encoder.o encoderRegisters.o -o main
+gcc-6 -g -Wall -lmodbus `pkg-config --cflags --libs libmodbus` main_ncurses.o encoder.o encoderRegisters.o -o main_ncurses -lncurses
+make: Leaving directory '/home/bart/Programowanie/enkodery/RT3/src'
+ 

@@ -1,0 +1,10 @@
+{
+    "makefile.extensionOutputFolder": "./.vscode",
+    "makefile.launchConfigurations": [
+        {
+            "cwd": "/home/bart/Programowanie/enkodery/RT3/src",
+            "binaryPath": "/home/bart/Programowanie/enkodery/RT3/src/main_ncurses",
+            "binaryArgs": []
+        }
+    ]
+}
