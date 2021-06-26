@@ -13,6 +13,22 @@
 //#include "encoderPrivate.h"
 //#include <stdbool.h>
 
+typedef struct angle 
+{
+    double deg;
+    double degm;
+    double degs;
+    int d;
+    int dm;
+    int ds;
+    double hour;
+    double hourm;
+    double hours;
+    int h;
+    int hm;
+    int hs;
+    
+}angle;
 
 /*!
 * Initialisation of encoder. Set parameters of connections and connect to encoder
@@ -51,6 +67,12 @@ uint32_t EncoderGetPosition(int slaveAddress);
 * \param slaveAddress The node adress of the encoder
 * \return Reverse state on success
 */
+uint32_t EncoderGetPositionH(int slaveAddress);
+
+uint32_t EncoderGetPositionL(int slaveAddress);
+
+angle EncoderGetSTAngle(int slaveAddress);
+
 uint32_t EncoderGetActualReverseState(int slaveAddress);
 
 //8 bit MSB 0xF000

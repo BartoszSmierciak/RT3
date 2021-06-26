@@ -16,10 +16,13 @@
 //modbus contex
 modbus_t *ctx;
 
-struct encoder {
+
+struct encoder 
+{
         uint32_t PositionH;
         uint32_t PositionL;
         uint32_t Position;
+        double   STAngle;
         uint32_t ActualReverseState;
         uint32_t TermResetState;
         uint32_t SpeedH;
@@ -308,6 +311,58 @@ void EncoderPrintRegisters(int slaveAddress)
 
 }
 uint32_t EncoderGetPosition(int slaveAddress)
+{
+    _encoder[slaveAddress].PositionH = EncoderReadModbus(slaveAddress, encoderRegPositionH);
+    _encoder[slaveAddress].PositionL = EncoderReadModbus(slaveAddress, encoderRegPositionL);
+    _encoder[slaveAddress].Position = (_encoder[slaveAddress].PositionH ) << 16 | _encoder[slaveAddress].PositionL;
+    return _encoder[slaveAddress].Position;
+}
+
+uint32_t EncoderGetPositionH(int slaveAddress)
+{
+    _encoder[slaveAddress].PositionH = EncoderReadModbus(slaveAddress, encoderRegPositionH);
+    _encoder[slaveAddress].PositionH = (_encoder[slaveAddress].PositionH ) << 16;
+    return _encoder[slaveAddress].PositionH;
+}
+
+uint32_t EncoderGetPositionL(int slaveAddress)
+{
+    _encoder[slaveAddress].PositionL = EncoderReadModbus(slaveAddress, encoderRegPositionL);
+    return _encoder[slaveAddress].PositionL;
+}
+
+angle EncoderGetSTAngle(int slaveAddress)
+{
+    _encoder[slaveAddress].PositionH = EncoderReadModbus(slaveAddress, encoderRegPositionH);
+    _encoder[slaveAddress].PositionL = EncoderReadModbus(slaveAddress, encoderRegPositionL);
+    _encoder[slaveAddress].Position = (_encoder[slaveAddress].PositionH ) << 16 | _encoder[slaveAddress].PositionL;
+
+    _encoder[slaveAddress].STResolutionH = EncoderReadModbus(slaveAddress, encoderRegSTResolutionH);
+    _encoder[slaveAddress].STResolutionL = EncoderReadModbus(slaveAddress, encoderRegSTResolutionL);
+    _encoder[slaveAddress].STResolution = (_encoder[slaveAddress].STResolutionH) << 16 | _encoder[slaveAddress].STResolutionL;
+
+    _encoder[slaveAddress].TotResolutionH = EncoderReadModbus(slaveAddress, encoderRegTotResolutionH);
+    _encoder[slaveAddress].TotResolutionL = EncoderReadModbus(slaveAddress, encoderRegTotResolutionL);
+    _encoder[slaveAddress].TotResolution = (_encoder[slaveAddress].TotResolutionH) << 16 | _encoder[slaveAddress].TotResolutionL;
+
+    _encoder[slaveAddress].STAngle = (((double)(_encoder[slaveAddress].Position % _encoder[slaveAddress].STResolution) / _encoder[slaveAddress].STResolution))*360.0;
+    angle angle;
+    angle.deg = _encoder[slaveAddress].STAngle;
+    angle.d = (int)angle.deg;
+    angle.degm = (angle.deg - angle.d) * 60.0;
+    angle.dm = (int)angle.degm;
+    angle.degs = (angle.degm - angle.dm) * 60.0;
+    angle.ds = (int)angle.degs;
+    angle.hour = angle.deg /15.0;
+    angle.h = (int)angle.hour;
+    angle.hourm = (angle.hour - angle.h) * 60.0;
+    angle.hm = (int)angle.hourm;
+    angle.hours = (angle.hourm - angle.hm) * 60.0;
+    angle.hs = (int)angle.hours;
+    return angle;
+}
+
+uint32_t EncoderGetAngleMT(int slaveAddress)
 {
     _encoder[slaveAddress].PositionH = EncoderReadModbus(slaveAddress, encoderRegPositionH);
     _encoder[slaveAddress].PositionL = EncoderReadModbus(slaveAddress, encoderRegPositionL);
